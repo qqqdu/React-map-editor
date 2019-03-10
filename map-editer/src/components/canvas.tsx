@@ -13,25 +13,24 @@ class Canvas extends React.Component {
   private tableRow:number = 10;
   private tableCol:number = 10
   public touch: boolean = false;
-  private tableDom:any
+  public tableDom:any
   private currentImg: string = 'http://img1.imgtn.bdimg.com/it/u=1992085767,102835282&fm=26&gp=0.jpg'
-  private chooseData: {
-    left?: string;
-    top?: string;
-    width?: string;
-    height?: string
-  } = {
-      left: '0px',
-      top: '0px',
-      width: '0px',
-      height: '0px'
-  }
+  
+  public hello = 'hello'
   private itemData: {
     width: number;
     height: number;
   } = {
     width: 40,
     height: 40
+  }
+  public state = {
+    chooseData: {
+        left: '0px',
+        top: '0px',
+        width: '0px',
+        height: '0px'
+    }
   }
   public constructor(prop:any) {
     super(prop);
@@ -42,13 +41,13 @@ class Canvas extends React.Component {
   }
   public render() {
     return (
-    <div className='table-item' 
-          onMouseDown={ (ev) => { this.startMouse(ev) } } 
+    <div className='table-item' onDragStart={ () => false }
+          onMouseDown = { ev => this.startMouse(ev) }
           onMouseMove={ (ev) => { this.moveMouse(ev) } }
           onScroll={ (ev) => { this.scroll(ev) } }
           onMouseUp={ (ev) => { this.upMouse(ev) } }>
       { this.renderMatrix() }
-      <div className='m-choose' style={ this.chooseData }></div>
+      <div className='m-choose' style={ this.state.chooseData }></div>
     </div>
     );
   }
@@ -95,12 +94,20 @@ class Canvas extends React.Component {
   }
 
   public setChooseData() {
-    this.chooseData = {
+    this.setState({
+      chooseData: {
         left: '0px',
         top: '0px',
         width: '0px',
         height: '0px'
-    }
+      }
+    })
+  }
+  public clickMethod() {
+
+    this.setState({
+      hello: 'fuckyou'
+    })
   }
   private getChooseDataNumber(): {left: number,top: number,width: number,height: number}{
     let data = {
@@ -109,22 +116,27 @@ class Canvas extends React.Component {
       width: 0,
       height: 0
     }
-    for(let key in this.chooseData) {
-      data[key] = Number(this.chooseData[key].slice(0, this.chooseData[key].length-2))
+    for(let key in this.state.chooseData) {
+      data[key] = Number(this.state.chooseData[key].slice(0, this.state.chooseData[key].length-2))
     }
     return data
   }
   public startMouse(ev: any) {
-    const y = ev.y - 
+    this.setChooseData()
+    const y = ev.pageY - 
               Number(this.tableDom.offsetTop) - 
               document.documentElement.scrollTop
-    const x = ev.x + this.tableDom.scrollLeft
-    console.log(ev, this.tableDom.offsetTop, document.documentElement.scrollTop)
-    this.setChooseData()
-    this.chooseData = Object.assign(this.chooseData, {
-      left: x+'px',
-      top: y + 'px'
-    })
+    const x = ev.pageX -
+    Number(this.tableDom.offsetLeft) +
+    this.tableDom.scrollLeft
+    this.setState((prevState:any)=>({ 
+      chooseData:  {
+        left: x + 'px',
+        top: y + 'px',
+        width: prevState.chooseData.width,
+        height: prevState.chooseData.height
+      }
+    }))
     this.touch = true
   }
   public scroll(ev:any) {
@@ -134,19 +146,23 @@ class Canvas extends React.Component {
     const {
       left, top
     } = this.getChooseDataNumber()
-    const x = ev.x - 
+    const x = ev.pageX - 
               left -
               Number(this.tableDom.offsetLeft) +
               this.tableDom.scrollLeft
-    const y = ev.y - 
+    const y = ev.pageY - 
               top - 
               Number(this.tableDom.offsetTop) - 
               document.documentElement.scrollTop +
               this.tableDom.scrollTop
-    this.chooseData = Object.assign(this.chooseData, {
-      width: x + 'px',
-      height: y + 'px'
-    })
+    this.setState((prevState:any) => ({
+      chooseData: {
+        width: x+'px',
+        height: y + 'px',
+        left: prevState.chooseData.left,
+        top: prevState.chooseData.top
+      }
+    }))
   }
   // 得到已选中的单元框数组
   private setChoose() {
@@ -169,7 +185,7 @@ class Canvas extends React.Component {
   public upMouse(ev:any) {
     this.touch = false
     this.setChoose()
-    this.setChooseData()
+   this.setChooseData()
     ev.preventDefault();
   }
 }

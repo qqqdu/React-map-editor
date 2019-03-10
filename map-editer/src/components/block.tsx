@@ -5,13 +5,15 @@
 
 
 import * as React from 'react';
-
+import '../style/block.less'
 
 class Block extends React.Component {
   public render() {
     return (
-      <div className="Block">
-        This is Block
+      <div className='block'>
+        <h3>图块</h3>
+        <li className='tools'>
+        </li>
       </div>
     );
   }
