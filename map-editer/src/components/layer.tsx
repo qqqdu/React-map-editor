@@ -4,6 +4,9 @@
 import * as React from 'react';
 import '../style/layer.less'
 import  { Icon, Switch, Input, Popconfirm }  from 'antd/lib'
+import * as actions from '../redux/actions';
+import { StoreState } from '../redux/store';
+import { connect, Dispatch } from 'react-redux';
 // 层级关系用直接用数组下标，sort是命名排序
 interface LayerItem {
   id: number,
