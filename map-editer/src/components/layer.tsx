@@ -4,10 +4,12 @@
 import * as React from 'react';
 import '../style/layer.less'
 import  { Icon, Switch, Input, Popconfirm }  from 'antd/lib'
-import * as actions from '../redux/actions';
+// import { connect } from 'react-redux'
+// import * as actions from '../redux/actions';
 import { StoreState } from '../redux/store';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 // 层级关系用直接用数组下标，sort是命名排序
+import * as Actions from '../redux/actions'
 interface LayerItem {
   id: number,
   name: string,
@@ -16,16 +18,13 @@ interface LayerItem {
 }
 enum upDown {UP, DOWN}
 
-class Layer extends React.Component {
+class LayerCom extends React.Component {
   private layers:Array<LayerItem> = []
   private nowLayers:number = -1
   public state = {
     layers: this.layers,
     nowLayers: this.nowLayers,
     visible: false
-  }
-  public constructor(props:{c:2}) {
-    super(props)
   }
   public render() {
     return (
@@ -157,5 +156,19 @@ class Layer extends React.Component {
     })
   }
 }
-
-export default Layer;
+export function mapStateToProps( { enthusiasmLevel, languageName: name  }: StoreState) {
+  return {
+      enthusiasmLevel,
+      name,
+  }
+}
+function mapDispatchToProps(dispatch:any) {
+  return {
+      onIncrement: () => dispatch(Actions.incrementEnthusiasm()),
+      onDecrement: () => dispatch(Actions.decrementEnthusiasm()),
+  }
+}
+function mergeProps(stateProps: any, dispatchProps: any, ownProps: any) {
+  return { ...ownProps, ...stateProps, ...dispatchProps};
+}
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(LayerCom)

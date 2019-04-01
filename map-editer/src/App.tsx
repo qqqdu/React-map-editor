@@ -9,10 +9,10 @@ import Canvas from './components/canvas'
 class App extends React.Component {
   public render() {
     return (
-      <div className="App" 
+      <div className="App"
             onContextMenu={ (ev) => ev.preventDefault() }
             onDragStart = { (ev) => ev.preventDefault()}
-             >
+            >
         <Utils/>
         <Layer/>
         <Block/>
