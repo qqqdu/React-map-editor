@@ -2,7 +2,7 @@
  * 图层组件，类似ps中的图层
  */
 import * as React from 'react';
-import '../style/canvas.css'
+import '@/style/canvas.css'
 interface matrixItem {
   img: string | undefined,
   row: number,

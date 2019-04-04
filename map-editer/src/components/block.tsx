@@ -5,7 +5,7 @@
 
 
 import * as React from 'react';
-import '../style/block.less'
+import '@/style/block.less'
 import  { Icon, Popconfirm }  from 'antd/lib'
 interface blockItem {
   id: number,

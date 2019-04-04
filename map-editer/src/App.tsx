@@ -1,10 +1,10 @@
 import * as React from 'react';
 import './style/App.less';
 // import './style/font.less'
-import Utils from './components/utils'
-import Layer from './components/layer'
-import Block from './components/block'
-import Canvas from './components/canvas'
+import Utils from '@/components/utils'
+import Layer from '@/components/layer'
+import Block from '@/components/block'
+import Canvas from '@/components/canvas'
 
 class App extends React.Component {
   public render() {
