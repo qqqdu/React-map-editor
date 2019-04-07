@@ -4,7 +4,7 @@ import './style/App.less';
 import Utils from '@/components/utils'
 import Layer from '@/components/layer'
 import Block from '@/components/block'
-import Canvas from '@/components/canvas'
+import Grid from '@/components/grid'
 
 class App extends React.Component {
   public render() {
@@ -16,7 +16,7 @@ class App extends React.Component {
         <Utils/>
         <Layer/>
         <Block/>
-        <Canvas/>
+        <Grid/>
       </div>
     );
   }

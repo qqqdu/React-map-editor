@@ -1,7 +1,9 @@
 /**
  * 全局类型的定义
  */
-interface LayerItem {
+import { blockItem } from './block'
+import { matrixItem } from './index'
+export interface LayerItem {
   // 图层id
   id: number,
   // 图层名称
@@ -9,8 +11,16 @@ interface LayerItem {
   // 排序
   sort: number,
   // 是否显示
-  show: boolean
+  show: boolean,
+  matrix: Array<Array<matrixItem>>
 }
 export interface layer { 
-  layers: Array<LayerItem>
+  layers: Array<LayerItem>;
+  curBlock: blockItem | undefined;
+  curLayerId: number | undefined;
+  tableRow: number;
+  tableCol: number;
+  // 单元格宽度和高度
+  boxWidth: number;
+  boxHeight: number;
 }

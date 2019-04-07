@@ -1,17 +1,87 @@
 /**
- * 工具组件，工具链
+ * 图块组件
+ * 图块组件就是网格基本单元
  */
+
+
 import * as React from 'react';
+import { connect } from 'react-redux';
+import '@/style/util.less'
+import  { Icon, Popconfirm }  from 'antd/lib'
+import * as Actions from '@/redux/actions/block'
+import { block, blockItem } from '@/types/block';
 
-
-class Utils extends React.Component {
+interface Props {
+  blockList: Array<blockItem>;
+  delBlock: (payload:{id: number}) => void;
+  createBlock: (payload: blockItem) => void;
+}
+class UtilCom extends React.Component<Props, {}> {
+  public blockList:Array<blockItem> = []
+  public state = {
+    visible: false,
+    nowBlock: -1
+  }
+  constructor(props:Props) {
+    super(props)
+  }
   public render() {
     return (
-      <div className="Utils">
-        This is Utils
+      <div className='util'>
+        <h3>工具栏</h3>        
+        <li className='tools'>
+          <a href='javascript:;'>
+            <label htmlFor='imgUpFile'>
+              <Icon type="plus"/>
+            </label>
+          </a>
+
+          <Popconfirm title="Are you sure delete this task?"
+                      visible={this.state.visible}
+                      onVisibleChange={(ev) => {this.handleVisibleChange(ev)}}  
+                      onConfirm={() => this.delBlock()} placement='bottom'>
+            <a href='javascript:;'>
+              <Icon type="delete"/>
+            </a>
+          </Popconfirm>
+        </li>
       </div>
     );
   }
+  
+
+  
+  public handleVisibleChange(visible:boolean) {
+    if (this.state.nowBlock <= 0) {
+      this.setState({ visible: false });
+      return;
+    }
+    this.setState({ visible });
+  }
+  public delBlock() {
+    const delId = this.props.blockList.findIndex((block) => {
+      return block.id === this.state.nowBlock
+    })
+    this.props.delBlock({
+      id: delId
+    })
+  }
 }
 
-export default Utils;
+export function mapStateToProps( StoreState: Map<string, block> ) {
+  return {
+    blockList: (StoreState.get('block') as block).blockList
+  }
+}
+function mapDispatchToProps(dispatch:any) {
+  return {
+      delBlock: (payload: { id: number }) => dispatch(Actions.DelBlock(payload)),
+      createBlock: (payload: blockItem) => dispatch(Actions.createBlock(payload))
+  }
+}
+// 合并方法和属性到 Props 上
+function mergeProps(stateProps: any, dispatchProps: any, ownProps: any) {
+  console.log(ownProps, stateProps, dispatchProps)
+  return { ...ownProps, ...stateProps, ...dispatchProps};
+}
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(UtilCom)
