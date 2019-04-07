@@ -6,9 +6,8 @@ import "@/style/canvas.less";
 // import * as GridActions from "@/redux/actions/grid";
 import { connect } from "react-redux";
 import { blockItem } from "@/types/block";
-import { matrixItem } from "@/types/index";
 import { LayerItem } from "@/types/layer";
-
+import * as layerActions from "@/redux/actions/layer";
 interface Props {
   curBlock: blockItem | undefined;
   curLayerId: number;
@@ -17,9 +16,9 @@ interface Props {
   boxWidth: number;
   boxHeight: number;
   layers: Array<LayerItem>
+  drawMatrix:(payload: Array<{x:number, y: number}>) => void;
 }
 class Grid extends React.Component<Props, {}> {
-  private matrix: Array<Array<matrixItem>>;
   public touch: boolean = false;
   public tableDom: any;
 
@@ -34,7 +33,6 @@ class Grid extends React.Component<Props, {}> {
   };
   public constructor(prop: Props) {
     super(prop);
-    // this.createMatrix();
   }
   public componentDidMount() {
     this.tableDom = document.getElementsByClassName("table-item")[0];
@@ -99,26 +97,6 @@ class Grid extends React.Component<Props, {}> {
         </div>
       );
     });
-  }
-
-  // 生成数据
-  public createMatrix() {
-    const map = [];
-    for (let i = 0; i < this.props.tableRow; i++) {
-      const row = [];
-      for (let j = 0; j < this.props.tableCol; j++) {
-        const col = {
-          src: undefined,
-          width: this.props.boxWidth,
-          row: this.props.tableRow,
-          col: this.props.tableCol,
-          height: this.props.boxHeight
-        };
-        row.push(col);
-      }
-      map.push(row);
-    }
-    this.matrix = map;
   }
 
   public setChooseData() {
@@ -213,13 +191,19 @@ class Grid extends React.Component<Props, {}> {
     if(!this.props.curBlock) {
       return
     }
+    const curChoose:Array<{x: number, y:number}> = []
     for (let i = startX; i < endX; i++) {
       for (let j = startY; j < endY; j++) {
-        this.matrix[j] &&
-          this.matrix[j][i] &&
-          (this.matrix[j][i].src = (this.props.curBlock as blockItem).src);
+        curChoose.push({
+          x: j,
+          y: i
+        })
+        // this.matrix[j] &&
+        //   this.matrix[j][i] &&
+        //   (this.matrix[j][i].src = (this.props.curBlock as blockItem).src);
       }
     }
+    this.props.drawMatrix(curChoose)
   }
   public upMouse(ev: any) {
     this.touch = false;
@@ -243,6 +227,7 @@ export function mapStateToProps(StoreState: Map<string, any>) {
 }
 function mapDispatchToProps(dispatch: any) {
   return {
+    drawMatrix: (payload: Array<{x:number, y: number}>) => dispatch(layerActions.drawMatrix(payload))
   };
 }
 // 合并方法和属性到 Props 上

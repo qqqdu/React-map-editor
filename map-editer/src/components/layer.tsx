@@ -11,7 +11,6 @@ import { LayerItem, layer } from "../types/layer";
 import { connect } from "react-redux";
 // 层级关系用直接用数组下标，sort是命名排序
 import * as Actions from "@/redux/actions/layer";
-import * as GridActions from "@/redux/actions/grid";
 import { RENAME_INTER } from "@/constants/layer";
 enum upDown {
   UP,
@@ -37,7 +36,9 @@ class LayerCom extends React.Component<Props, {}> {
   };
   constructor(props: Props) {
     super(props);
-    console.log(props);
+    this.banRouter()
+  }
+  public banRouter() {
   }
   public render() {
     return (
@@ -161,7 +162,7 @@ export function mapStateToProps(StoreState: Map<any, any>) {
   console.log(StoreState);
   return {
     layers: (StoreState.get("layer") as layer).layers,
-    curLayerId: StoreState.get("grid").curLayerId
+    curLayerId: StoreState.get("layer").curLayerId
   };
 }
 function mapDispatchToProps(dispatch: any) {
@@ -175,9 +176,9 @@ function mapDispatchToProps(dispatch: any) {
       dispatch(Actions.toggleLayer(payload)),
     switchLayer: (payload: { index: number; type: upDown }) =>
       dispatch(Actions.switchLayer(payload)),
-    setCurLayer: (payload: number) => dispatch(GridActions.SetCurLayer(payload)),
+    setCurLayer: (payload: number) => dispatch(Actions.SetCurLayer(payload)),
     createMatrix: (payload: number) =>
-      dispatch(Actions.createMatrix(payload))
+      dispatch(Actions.createMatrix(payload)),
   };
 }
 // 合并方法和属性到 Props 上

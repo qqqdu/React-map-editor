@@ -3,7 +3,6 @@ import { enthusiasm } from '../../types/index';
 import { INCREMENT_ENTHUSIASM, DECREMENT_ENTHUSIASM } from '../../constants/index';
 import { layer } from './layer'
 import { block } from './block'
-import { grid } from './grid'
 const initState= {
   enthusiasmLevel: 1,
   languageName: 'TypeScript',
@@ -18,4 +17,4 @@ export function enthusiasm(state: enthusiasm = initState, action: EnthusiasmActi
   return {...state}
 }
 
-export { layer, block, grid }
+export { layer, block }

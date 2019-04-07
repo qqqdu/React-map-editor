@@ -12,7 +12,8 @@ import {
   SWITCH_LAYER,
   CREATE_MATRIX,
   SET_CUR_BLOCK,
-  SET_CUR_LAYER
+  SET_CUR_LAYER,
+  DRAW_MATRIX
 } from "../../constants/layer";
 // import { INCREMENT_ENTHUSIASM, DECREMENT_ENTHUSIASM } from '../../constants/layer';
 const initState = {
@@ -44,6 +45,8 @@ export function layer(state: layer = initState, action: layerActions): layer {
       return setBlockState(state, action.payload)
     case SET_CUR_LAYER:
       return setLayerState(state, action.payload)
+    case DRAW_MATRIX:
+      return drawMatrix(state, action.payload)
     default:
       return { ...state };
   }
@@ -128,7 +131,28 @@ function createMatrix(state: layer, payload: number): layer {
   layer.matrix = map
   return {...state, layers: layers};
 }
-
+function drawMatrix(state: layer, matrixArr: Array<{x:number, y: number}>) {
+  if(state.curLayerId < 0 || !state.curBlock) {
+    return state
+  }
+  const layers = [...state.layers]
+  const layer = layers.find(item => {
+    return item.id === state.curLayerId 
+  }) as LayerItem
+  matrixArr.map((matrix) => {
+    const x = matrix.x
+    const y = matrix.y
+    console.log('设置选中元素')
+    console.log(x, y)
+    const curBlock = state.curBlock as blockItem
+    layer.matrix[x][y] = Object.assign({}, layer.matrix[x][y],{
+      src: curBlock.src,
+      height: curBlock.height,
+      width: curBlock.width,
+    })
+  })
+  return {...state, layers}
+}
 
 function setBlockState(state: layer, payload: blockItem): layer {
   return {...state, curBlock: {...payload}}

@@ -17,7 +17,7 @@ export interface LayerItem {
 export interface layer { 
   layers: Array<LayerItem>;
   curBlock: blockItem | undefined;
-  curLayerId: number | undefined;
+  curLayerId: number;
   tableRow: number;
   tableCol: number;
   // 单元格宽度和高度

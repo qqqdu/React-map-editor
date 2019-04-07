@@ -35,9 +35,11 @@ export interface matrixInter {
   matrix: Array<Array<matrixItem>>,
   id: number
 }
-
+export const DRAW_MATRIX = "DRAW_MATRIX";
+export type DRAW_MATRIX = typeof DRAW_MATRIX
+// 设置当前块
 export const SET_CUR_BLOCK = 'SET_CUR_BLOCK';
 export type SET_CUR_BLOCK = typeof SET_CUR_BLOCK;
-
+// 设置当前图层
 export const SET_CUR_LAYER = 'SET_CUR_LAYER';
 export type SET_CUR_LAYER = typeof SET_CUR_LAYER
