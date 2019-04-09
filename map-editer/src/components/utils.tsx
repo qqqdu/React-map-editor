@@ -9,9 +9,10 @@ import { connect } from 'react-redux';
 import '@/style/util.less'
 import  { Icon, Popconfirm }  from 'antd/lib'
 import * as Actions from '@/redux/actions/block'
-import { block, blockItem } from '@/types/block';
+import { blockItem } from '@/types/block';
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
+import { Map } from 'immutable';
 interface Props {
   blockList: Array<blockItem>;
   canUndo: Boolean;
@@ -93,11 +94,19 @@ class UtilCom extends React.Component<Props, {}> {
 }
 
 export function mapStateToProps( StoreState: Map<string, any> ) {
+  const present = StoreState.getIn(["layer",'present'])
+  console.log(present)
+  
+  console.log(StoreState.getIn(["layer",'present','curBlock']))
+  const layer = StoreState.get("layer").toJS()
+  const block = StoreState.get("block").toJS().blockList
+  console.log('图层')
+  console.log(layer)
   // 问题出现在这里呦  
   return {
-    blockList: (StoreState.get('block') as block).blockList,
-    canUndo: StoreState.get("layer").past.length > 0,
-    canRedo: StoreState.get("layer").future.length > 0
+    blockList: block,
+    canUndo: layer.past.length > 0,
+    canRedo: layer.future.length > 0
   }
 }
 function mapDispatchToProps(dispatch:any) {

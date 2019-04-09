@@ -7,7 +7,7 @@ import { Icon, Switch, Input, Popconfirm } from "antd/lib";
 // import { connect } from 'react-redux'
 // import * as actions from '../redux/actions';
 // import { StoreState } from '../types/index';
-import { LayerItem, layer } from "../types/layer";
+import { LayerItem } from "../types/layer";
 import { connect } from "react-redux";
 // 层级关系用直接用数组下标，sort是命名排序
 import * as Actions from "@/redux/actions/layer";
@@ -157,7 +157,9 @@ class LayerCom extends React.Component<Props, {}> {
 }
 export function mapStateToProps(StoreState: Map<any, any>) {
   // 问题出现在这里呦
-  const layer = (StoreState.get("layer").present as layer)
+  const layer = StoreState.get("layer").present.toJS()
+  console.log('图层')
+  console.log(layer)
   return {
     layers: (layer).layers,
     curLayerId: layer.curLayerId
