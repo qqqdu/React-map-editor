@@ -1,25 +1,26 @@
 import { blockActions } from '../actions/block';
 import {  block, blockItem } from '@/types/block';
 import { DEL_BLOCK, CREATE_BLOCK } from '@/constants/block';
-const initState= {
-  blockList: []
-}; 
-export function block(state: block = initState, action: blockActions): block {
+import { fromJS, Map, List } from 'immutable';
+const initState= fromJS({
+  blockList: List([])
+}); 
+export function block(state: Map<string, any> = initState, action: blockActions): Map<any, Array<blockItem>> {
   switch (action.type) {
     case DEL_BLOCK:
       return delBlock(state, action.payload)
     case CREATE_BLOCK:
       return createBlock(state, action.payload)
   }
-  return {...state}
+  return state
 }
-function delBlock(state: block, payload: {id: number}): block {
-  const blocks = [...state.blockList]
+function delBlock(state: Map<any, any>, payload: {id: number}): Map<any, Array<blockItem>> {
+  const blocks = (state.get('blockList') as List<blockItem>).toJS()
   blocks.splice(payload.id, 1)
-  return {...state, blockList: blocks}
+  return state.set('blockList', List(blocks))
 }
-function createBlock(state: block, payload: blockItem): block {
-  const blocks = [...state.blockList]
+function createBlock(state: Map<string, any>, payload: blockItem): Map<any, Array<blockItem>> {
+  const blocks = (state.get('blockList') as List<blockItem>).toJS()
   blocks.push(payload)
-  return {...state, blockList: blocks}
+  return state.set('blockList', List(blocks))
 }

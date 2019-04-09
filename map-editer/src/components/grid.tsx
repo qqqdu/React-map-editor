@@ -6,7 +6,7 @@ import "@/style/canvas.less";
 // import * as GridActions from "@/redux/actions/grid";
 import { connect } from "react-redux";
 import { blockItem } from "@/types/block";
-import { LayerItem } from "@/types/layer";
+import { LayerItem, layer } from "@/types/layer";
 import * as layerActions from "@/redux/actions/layer";
 interface Props {
   curBlock: blockItem | undefined;
@@ -214,7 +214,9 @@ class Grid extends React.Component<Props, {}> {
 }
 
 export function mapStateToProps(StoreState: Map<string, any>) {
-  const layer = StoreState.get("layer");
+  const layer = (StoreState.get("layer").present as layer)
+  console.log('图层数据')
+  console.log(layer.layers)
   return {
     layers: layer.layers,
     curBlock: layer.curBlock,

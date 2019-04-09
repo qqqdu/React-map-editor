@@ -8,9 +8,9 @@ import { connect } from "react-redux";
 import "@/style/block.less";
 import { Icon, Popconfirm } from "antd/lib";
 import * as Actions from "@/redux/actions/block";
-import { block, blockItem } from "@/types/block";
+import { blockItem } from "@/types/block";
 import * as LayerActions from "@/redux/actions/layer";
-
+import { Map } from 'immutable';
 interface Props {
   blockList: Array<blockItem>;
   delBlock: (payload: { id: number }) => void;
@@ -136,9 +136,10 @@ class BLockCom extends React.Component<Props, {}> {
   }
 }
 
-export function mapStateToProps(StoreState: Map<string, block>) {
+export function mapStateToProps(StoreState: Map<string, any>) {
+  const block = StoreState.get("block").toJS().blockList
   return {
-    blockList: (StoreState.get("block") as block).blockList
+    blockList: block
   };
 }
 function mapDispatchToProps(dispatch: any) {

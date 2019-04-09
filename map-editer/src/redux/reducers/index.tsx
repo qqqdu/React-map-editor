@@ -1,7 +1,7 @@
 import { EnthusiasmAction } from '../actions';
 import { enthusiasm } from '../../types/index';
 import { INCREMENT_ENTHUSIASM, DECREMENT_ENTHUSIASM } from '../../constants/index';
-import { layer } from './layer'
+import layer from './layer'
 import { block } from './block'
 const initState= {
   enthusiasmLevel: 1,

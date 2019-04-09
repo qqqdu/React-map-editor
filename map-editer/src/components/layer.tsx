@@ -79,7 +79,6 @@ class LayerCom extends React.Component<Props, {}> {
     );
   }
   public renderLayers() {
-    console.log("是图层更新");
     console.log(this.props);
     return this.props.layers.map(item => {
       const chooseLayer = item.id === this.props.curLayerId ? "chooseLayer" : "";
@@ -157,12 +156,11 @@ class LayerCom extends React.Component<Props, {}> {
   }
 }
 export function mapStateToProps(StoreState: Map<any, any>) {
-  console.log("mapstate");
-  console.log((StoreState.get("layer") as layer).layers);
-  console.log(StoreState);
+  // 问题出现在这里呦
+  const layer = (StoreState.get("layer").present as layer)
   return {
-    layers: (StoreState.get("layer") as layer).layers,
-    curLayerId: StoreState.get("layer").curLayerId
+    layers: (layer).layers,
+    curLayerId: layer.curLayerId
   };
 }
 function mapDispatchToProps(dispatch: any) {

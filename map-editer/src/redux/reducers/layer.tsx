@@ -1,7 +1,7 @@
 import { layerActions } from "../actions/layer";
 import { layer, LayerItem } from "../../types/layer";
 import { blockItem } from '@/types/block'
-
+import undoable from 'redux-undo'
 import {
   CHANGE_LAYER_NAME,
   CREATE_LAYER,
@@ -25,32 +25,15 @@ const initState = {
   boxWidth: 50,
   boxHeight: 50
 };
-
-export function layer(state: layer = initState, action: layerActions): layer {
-  
-  switch (action.type) {
-    case CHANGE_LAYER_NAME:
-      return cgLayerName(state, action.payload);
-    case CREATE_LAYER:
-      return createLayer(state, action.payload);
-    case DEL_LAYER:
-      state.layers.splice(action.payload.id, 1);
-    case TOGGLE_LAYER:
-      return toggleLayer(state, action.payload);
-    case SWITCH_LAYER:
-      return switchLayer(state, action.payload);
-    case CREATE_MATRIX:
-      return createMatrix(state, action.payload);
-    case SET_CUR_BLOCK:
-      return setBlockState(state, action.payload)
-    case SET_CUR_LAYER:
-      return setLayerState(state, action.payload)
-    case DRAW_MATRIX:
-      return drawMatrix(state, action.payload)
-    default:
-      return { ...state };
-  }
-}
+// const initState = fromJS({
+//   layers: [],
+//   curBlock: undefined,
+//   curLayerId: -1,
+//   tableCol: 20,
+//   tableRow: 10,
+//   boxWidth: 50,
+//   boxHeight: 50
+// })
 function cgLayerName(state: layer, payload: { id: number; name: string }) {
   const layers = [...state.layers];
   const layer = layers.find(item => {
@@ -142,8 +125,6 @@ function drawMatrix(state: layer, matrixArr: Array<{x:number, y: number}>) {
   matrixArr.map((matrix) => {
     const x = matrix.x
     const y = matrix.y
-    console.log('设置选中元素')
-    console.log(x, y)
     const curBlock = state.curBlock as blockItem
     layer.matrix[x][y] = Object.assign({}, layer.matrix[x][y],{
       src: curBlock.src,
@@ -160,3 +141,36 @@ function setBlockState(state: layer, payload: blockItem): layer {
 function setLayerState(state: layer, payload: number): layer {
   return {...state ,curLayerId: payload}
 }
+
+function layerReducer(state: layer = initState, action: layerActions): layer {
+  
+  switch (action.type) {
+    case CHANGE_LAYER_NAME:
+      return cgLayerName(state, action.payload);
+    case CREATE_LAYER:
+      return createLayer(state, action.payload);
+    case DEL_LAYER:
+      state.layers.splice(action.payload.id, 1);
+    case TOGGLE_LAYER:
+      return toggleLayer(state, action.payload);
+    case SWITCH_LAYER:
+      return switchLayer(state, action.payload);
+    case CREATE_MATRIX:
+      return createMatrix(state, action.payload);
+    case SET_CUR_BLOCK:
+      return setBlockState(state, action.payload)
+    case SET_CUR_LAYER:
+      return setLayerState(state, action.payload)
+    case DRAW_MATRIX:
+      return drawMatrix(state, action.payload)
+    default:
+      return { ...state };
+  }
+}
+
+
+const layer = undoable(layerReducer,{
+  debug: true
+})
+
+export default layer
