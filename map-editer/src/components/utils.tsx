@@ -94,19 +94,14 @@ class UtilCom extends React.Component<Props, {}> {
 }
 
 export function mapStateToProps( StoreState: Map<string, any> ) {
-  const present = StoreState.getIn(["layer",'present'])
-  console.log(present)
-  
-  console.log(StoreState.getIn(["layer",'present','curBlock']))
-  const layer = StoreState.get("layer").toJS()
-  const block = StoreState.get("block").toJS().blockList
-  console.log('图层')
-  console.log(layer)
+  const layer = StoreState.getIn(["layer"])
+  const block = StoreState.getIn(["block", 'blockList']).toJS()
+  console.log(StoreState.getIn(["layer"]))
   // 问题出现在这里呦  
   return {
     blockList: block,
-    canUndo: layer.past.length > 0,
-    canRedo: layer.future.length > 0
+    canUndo: layer.past && layer.past.length > 0,
+    canRedo: layer.future && layer.future.length > 0
   }
 }
 function mapDispatchToProps(dispatch:any) {
@@ -119,7 +114,6 @@ function mapDispatchToProps(dispatch:any) {
 }
 // 合并方法和属性到 Props 上
 function mergeProps(stateProps: any, dispatchProps: any, ownProps: any) {
-  console.log(ownProps, stateProps, dispatchProps)
   return { ...ownProps, ...stateProps, ...dispatchProps};
 }
 export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(UtilCom)

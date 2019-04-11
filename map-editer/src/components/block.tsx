@@ -152,7 +152,6 @@ function mapDispatchToProps(dispatch: any) {
 }
 // 合并方法和属性到 Props 上
 function mergeProps(stateProps: any, dispatchProps: any, ownProps: any) {
-  console.log(ownProps, stateProps, dispatchProps);
   return { ...ownProps, ...stateProps, ...dispatchProps };
 }
 export default connect(

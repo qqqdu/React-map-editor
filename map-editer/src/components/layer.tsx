@@ -79,7 +79,6 @@ class LayerCom extends React.Component<Props, {}> {
     );
   }
   public renderLayers() {
-    console.log(this.props);
     return this.props.layers.map(item => {
       const chooseLayer = item.id === this.props.curLayerId ? "chooseLayer" : "";
       return (
@@ -155,11 +154,9 @@ class LayerCom extends React.Component<Props, {}> {
     });
   }
 }
-export function mapStateToProps(StoreState: Map<any, any>) {
+export function mapStateToProps(StoreState: Map<string, any>) {
   // 问题出现在这里呦
-  const layer = StoreState.get("layer").present.toJS()
-  console.log('图层')
-  console.log(layer)
+  const layer = StoreState.get("layer").present
   return {
     layers: (layer).layers,
     curLayerId: layer.curLayerId
@@ -183,7 +180,6 @@ function mapDispatchToProps(dispatch: any) {
 }
 // 合并方法和属性到 Props 上
 function mergeProps(stateProps: any, dispatchProps: any, ownProps: any) {
-  console.log(ownProps, stateProps, dispatchProps);
   return { ...ownProps, ...stateProps, ...dispatchProps };
 }
 export default connect(

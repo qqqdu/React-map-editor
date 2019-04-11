@@ -1,6 +1,7 @@
 import { layerActions } from "../actions/layer";
 import { layer, LayerItem } from "../../types/layer";
 import { blockItem } from '@/types/block'
+import { List } from 'immutable';
 import undoable from 'redux-undo'
 import {
   CHANGE_LAYER_NAME,
@@ -15,18 +16,19 @@ import {
   SET_CUR_LAYER,
   DRAW_MATRIX
 } from "../../constants/layer";
-import { fromJS, Map, List } from 'immutable';
+// import matrixReducer from './matrixReducer'
 // import { INCREMENT_ENTHUSIASM, DECREMENT_ENTHUSIASM } from '../../constants/layer';
-const initState = fromJS({
-  layers: List([]),
+const initState = {
+  layers: [],
   curBlock: undefined,
   curLayerId: -1,
   tableCol: 20,
   tableRow: 10,
   boxWidth: 50,
-  boxHeight: 50
-});
-
+  boxHeight: 50,
+  past: [],
+  future: []
+};
 // const initState = fromJS({
 //   layers: [],
 //   curBlock: undefined,
@@ -36,58 +38,51 @@ const initState = fromJS({
 //   boxWidth: 50,
 //   boxHeight: 50
 // })
-function cgLayerName(state: Map<any, any>, payload: { id: number; name: string }) {
-  const layers:Array<LayerItem> = state.get('layers').toJS()
+function cgLayerName(state: layer, payload: { id: number; name: string }) {
+  const layers = [...state.layers];
   const layer = layers.find(item => {
     return item.id === payload.id;
   }) as LayerItem;
   layer.name = payload.name;
-  return state.set('layers', List(layers))
+  return { ...state, layers };
 }
-function createLayer(state: Map<any, any>, payload: { id: number }): Map<any, any> {
+function createLayer(state: layer, payload: { id: number }): layer {
   let maxNumberItem = {
     sort: -1
   };
-  const cloneLayers:Array<LayerItem> = state.get('layers').toJS()
-  if (cloneLayers.length) {
-    maxNumberItem = cloneLayers.reduce((val1, val2) => {
+  if (state.layers.length) {
+    maxNumberItem = state.layers.reduce((val1, val2) => {
       if (!val2) return val1;
       return val1.sort > val2.sort ? val1 : val2;
     });
   }
-  const layers:Array<LayerItem> = state.get('layers').toJS()
+  const layers = [...state.layers];
   layers.push({
     id: payload.id,
     name: "string",
     sort: maxNumberItem.sort + 1,
     show: true,
-    matrix: []
+    matrix: List([])
   });
-  return state.set('layers', List(layers))
+  return { ...state, layers };
 }
-function delLayer(state: Map<any, any>, payload: { id: number }): Map<any, any> {
-  const layers:Array<LayerItem> = state.get('layers').toJS()
-  layers.splice(payload.id, 1);
-  return state.set('layers', List(layers))
+function toggleLayer(state: layer, payload: { id: number }): layer {
+  return Object.assign({}, state, {
+    layers: state.layers.map(val => {
+      if (payload.id === val.id) {
+        return Object.assign({}, val, {
+          show: !val.show
+        });
+      }
+      return val;
+    })
+  });
 }
-function toggleLayer(state:  Map<any, any>, payload: { id: number }):  Map<any, any> {
-  const layers:Array<LayerItem> = state.get('layers').toJS()
-  layers.map(val => {
-    if (payload.id === val.id) {
-      return Object.assign({}, val, {
-        show: !val.show
-      });
-    }
-    return val;
-  })
-  return state.set('layers', List(layers))
-}
-function switchLayer(state: Map<any, any>, payload: SWITCH_LAYER_PAYLOAD): Map<any, any> {
+function switchLayer(state: layer, payload: SWITCH_LAYER_PAYLOAD): layer {
   const index = payload.index;
-  const layers:Array<LayerItem> = state.get('layers').toJS()
-
+  const layers = [...state.layers];
   if (payload.type === upDown.DOWN) {
-    if (index === layers.length - 1) {
+    if (index === state.layers.length - 1) {
       return state;
     }
     // 交换位置
@@ -98,94 +93,99 @@ function switchLayer(state: Map<any, any>, payload: SWITCH_LAYER_PAYLOAD): Map<a
     }
     [layers[index], layers[index - 1]] = [layers[index - 1], layers[index]];
   }
-  return state.set('layers', List(layers))
+  return { ...state, layers: layers };
 }
-function createMatrix(state: Map<any, any>, payload: number): Map<any, any> {
-  const layers:Array<LayerItem> = state.get('layers').toJS()
-  const tableRow = state.get('tableRow'),
-        tableCol = state.get('tableRow'),
-        boxWidth = state.get('boxWidth'),
-        boxHeight = state.get('boxHeight')
+function createMatrixReducer(state: layer, payload: number): layer {
   const map = [];
-  for (let i = 0; i < tableRow; i++) {
+  for (let i = 0; i < state.tableRow; i++) {
     const row = [];
-    for (let j = 0; j < tableCol; j++) {
+    for (let j = 0; j < state.tableCol; j++) {
       const col = {
         src: undefined,
-        width: boxWidth,
-        row: tableRow,
-        col: tableCol,
-        height: boxHeight
+        width: state.boxWidth,
+        row: state.tableRow,
+        col: state.tableCol,
+        height: state.boxHeight
       };
       row.push(col);
     }
     map.push(row);
   }
+  const layers = [...state.layers];
   const layer = layers.find(item => {
     return item.id === payload
   }) as LayerItem;
-  layer.matrix = map
-  return state.set('layers', List(layers)).set('matrix', map)
+  layer.matrix = List(map)
+  return {...state, layers};
 }
-function drawMatrix(state: Map<any, any>, matrixArr: Array<{x:number, y: number}>) {
-  const curLayerId = state.get('curLayerId'),
-        curBlock = state.get('curBlock')
-  if(curLayerId < 0 || !curBlock) {
+function drawMatrixReducer(state: layer, matrixArr: Array<{x:number, y: number}>) {
+  console.log('报错')
+  if(state.curLayerId < 0 || !state.curBlock) {
     return state
   }
-  const layers:Array<LayerItem> = state.get('layers').toJS()
-  const layer = layers.find(item => {
-    return item.id === curLayerId 
-  }) as LayerItem
+  const layers = [...state.layers]
+  const layer = Object.assign({}, layers.find(item => {
+    return item.id === state.curLayerId 
+  }) as LayerItem)
   matrixArr.map((matrix) => {
     const x = matrix.x
     const y = matrix.y
-    layer.matrix[x][y] = Object.assign({}, layer.matrix[x][y],{
+    const item = layer.matrix.getIn([x, y])
+    const curBlock = state.curBlock as blockItem
+    const obj  = {
       src: curBlock.src,
       height: curBlock.height,
       width: curBlock.width,
-    })
+      row: item.row,
+      col: item.col
+    }
+    layer.matrix = layer.matrix.setIn([x, y], obj)
   })
-  return state.set('layers', List(layers))
+  const rLayers = layers.map((item) => {
+    if(item.id === state.curLayerId ) {
+      console.log(layer)
+      return layer
+    }
+    return item
+  })
+  console.log(rLayers)
+  return {...state, layers: rLayers}
 }
 
-function setBlockState(state: Map<any, any>, payload: blockItem): Map<any, any> {
-  return state.set('curBlock', payload)
+function setBlockState(state: layer, payload: blockItem): layer {
+  return {...state, curBlock: {...payload}}
 }
-function setLayerState(state: Map<any, any>, payload: number): Map<any, any> {
-  return state.set('curLayerId', payload)
-
+function setLayerState(state: layer, payload: number): layer {
+  return {...state ,curLayerId: payload}
 }
 
-function layerReducer(state: Map<any, any> = initState, action: layerActions): Map<any, any> {
-  
+
+function layerReducer(state: layer = initState, action: layerActions): layer {
   switch (action.type) {
     case CHANGE_LAYER_NAME:
       return cgLayerName(state, action.payload);
     case CREATE_LAYER:
       return createLayer(state, action.payload);
     case DEL_LAYER:
-      return delLayer(state, action.payload)
+      state.layers.splice(action.payload.id, 1);
     case TOGGLE_LAYER:
       return toggleLayer(state, action.payload);
     case SWITCH_LAYER:
       return switchLayer(state, action.payload);
     case CREATE_MATRIX:
-      return createMatrix(state, action.payload);
+      return createMatrixReducer(state, action.payload);
     case SET_CUR_BLOCK:
       return setBlockState(state, action.payload)
     case SET_CUR_LAYER:
       return setLayerState(state, action.payload)
     case DRAW_MATRIX:
-      return drawMatrix(state, action.payload)
+      return drawMatrixReducer(state, action.payload)
     default:
       return { ...state };
   }
 }
 
 
-const layer = undoable(layerReducer,{
+export default undoable(layerReducer,{
   debug: true
 })
-
-export default layer

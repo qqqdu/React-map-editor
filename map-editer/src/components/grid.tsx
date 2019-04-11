@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { blockItem } from "@/types/block";
 import { LayerItem, layer } from "@/types/layer";
 import * as layerActions from "@/redux/actions/layer";
+import { matrixItem } from '@/types';
 interface Props {
   curBlock: blockItem | undefined;
   curLayerId: number;
@@ -73,7 +74,9 @@ class Grid extends React.Component<Props, {}> {
       width: this.props.boxWidth + "px",
       height: this.props.boxHeight + "px"
     };
-    return layer.matrix.map((row, index) => {
+    const matrix:Array<Array<matrixItem>> = layer.matrix.toArray()
+    console.log(matrix)
+    return matrix.map((row, index) => {
       const cols = row.map((item, indexT) => {
         const key = `${index}-${indexT}`
         if (item.src) {
@@ -215,8 +218,6 @@ class Grid extends React.Component<Props, {}> {
 
 export function mapStateToProps(StoreState: Map<string, any>) {
   const layer = (StoreState.get("layer").present as layer)
-  console.log('图层数据')
-  console.log(layer.layers)
   return {
     layers: layer.layers,
     curBlock: layer.curBlock,
@@ -234,7 +235,6 @@ function mapDispatchToProps(dispatch: any) {
 }
 // 合并方法和属性到 Props 上
 function mergeProps(stateProps: any, dispatchProps: any, ownProps: any) {
-  console.log(ownProps, stateProps, dispatchProps);
   return { ...ownProps, ...stateProps, ...dispatchProps };
 }
 export default connect(

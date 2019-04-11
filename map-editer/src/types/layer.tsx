@@ -3,6 +3,7 @@
  */
 import { blockItem } from './block'
 import { matrixItem } from './index'
+import { List } from 'immutable';
 export interface LayerItem {
   // 图层id
   id: number,
@@ -12,7 +13,7 @@ export interface LayerItem {
   sort: number,
   // 是否显示
   show: boolean,
-  matrix: Array<Array<matrixItem>>
+  matrix: List<Array<matrixItem>>
 }
 export interface layer { 
   layers: Array<LayerItem>;
