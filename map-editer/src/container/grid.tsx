@@ -9,6 +9,7 @@ import { blockItem } from "@/types/block";
 import { LayerItem, layer } from "@/types/layer";
 import * as layerActions from "@/redux/actions/layer";
 import { matrixItem } from '@/types';
+import createMatrix from '@/utils/createMatrix'
 interface Props {
   curBlock: blockItem | undefined;
   curLayerId: number;
@@ -17,6 +18,7 @@ interface Props {
   boxWidth: number;
   boxHeight: number;
   layers: Array<LayerItem>
+  layer: layer;
   drawMatrix:(payload: Array<{x:number, y: number}>) => void;
 }
 class Grid extends React.Component<Props, {}> {
@@ -55,6 +57,9 @@ class Grid extends React.Component<Props, {}> {
         }}
       >
         {this.mapLayers()}
+        <div className='layer-item' key={-999}>
+          {this.drawMatrix(createMatrix(this.props.layer), 'item item-grid')}
+        </div>
         <div className="m-choose" style={this.state.chooseData} />
       </div>
     );
@@ -62,20 +67,24 @@ class Grid extends React.Component<Props, {}> {
   // 遍历图层
   public mapLayers() {
     return this.props.layers.map((layer, index) => {
+      if(!layer.show) {
+        return false
+      }
       return (<div className='layer-item' key={layer.id}>
-        { this.renderMatrix(layer, index) }
+        { this.renderMatrix(layer) }
       </div>)
     })
   }
   // 渲染单元格
-  public renderMatrix(layer:LayerItem, layerIndex:number) {
-    const className = layerIndex === 0 ? 'item item-grid' : 'item'
+  public renderMatrix(layer:LayerItem) {
+    const matrix= layer.matrix.toArray()
+    return this.drawMatrix(matrix, 'item')
+  }
+  public drawMatrix(matrix:Array<Array<matrixItem>>, className:string = 'item') {
     const itemStyle = {
       width: this.props.boxWidth + "px",
       height: this.props.boxHeight + "px"
     };
-    const matrix:Array<Array<matrixItem>> = layer.matrix.toArray()
-    console.log(matrix)
     return matrix.map((row, index) => {
       const cols = row.map((item, indexT) => {
         const key = `${index}-${indexT}`
@@ -83,6 +92,7 @@ class Grid extends React.Component<Props, {}> {
           return (
             <div className={className} key={key} style={itemStyle}>
               <img
+                style={{width: item.width, height: item.height}}
                 onDragStart={() => {
                   return false;
                 }}
@@ -101,7 +111,6 @@ class Grid extends React.Component<Props, {}> {
       );
     });
   }
-
   public setChooseData() {
     this.setState({
       chooseData: {
@@ -220,6 +229,7 @@ export function mapStateToProps(StoreState: Map<string, any>) {
   const layer = (StoreState.get("layer").present as layer)
   return {
     layers: layer.layers,
+    layer,
     curBlock: layer.curBlock,
     curLayerId: layer.curLayerId,
     tableCol: layer.tableCol,

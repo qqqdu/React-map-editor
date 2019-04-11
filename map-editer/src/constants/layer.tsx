@@ -43,3 +43,12 @@ export type SET_CUR_BLOCK = typeof SET_CUR_BLOCK;
 // 设置当前图层
 export const SET_CUR_LAYER = 'SET_CUR_LAYER';
 export type SET_CUR_LAYER = typeof SET_CUR_LAYER
+// 设置属性  
+export const SET_GRID_INF = 'SET_GRID_INF';
+export type SET_GRID_INF = typeof SET_GRID_INF
+export interface GRIDINF {
+  tableCol: number;
+  tableRow: number;
+  boxWidth: number;
+  boxHeight: number;
+}

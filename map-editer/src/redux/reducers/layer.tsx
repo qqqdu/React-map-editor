@@ -2,6 +2,7 @@ import { layerActions } from "../actions/layer";
 import { layer, LayerItem } from "../../types/layer";
 import { blockItem } from '@/types/block'
 import { List } from 'immutable';
+import createMatrix from '@/utils/createMatrix'
 import undoable from 'redux-undo'
 import {
   CHANGE_LAYER_NAME,
@@ -14,8 +15,10 @@ import {
   CREATE_MATRIX,
   SET_CUR_BLOCK,
   SET_CUR_LAYER,
-  DRAW_MATRIX
-} from "../../constants/layer";
+  DRAW_MATRIX,
+  SET_GRID_INF,
+  GRIDINF
+} from "@/constants/layer";
 // import matrixReducer from './matrixReducer'
 // import { INCREMENT_ENTHUSIASM, DECREMENT_ENTHUSIASM } from '../../constants/layer';
 const initState = {
@@ -96,21 +99,7 @@ function switchLayer(state: layer, payload: SWITCH_LAYER_PAYLOAD): layer {
   return { ...state, layers: layers };
 }
 function createMatrixReducer(state: layer, payload: number): layer {
-  const map = [];
-  for (let i = 0; i < state.tableRow; i++) {
-    const row = [];
-    for (let j = 0; j < state.tableCol; j++) {
-      const col = {
-        src: undefined,
-        width: state.boxWidth,
-        row: state.tableRow,
-        col: state.tableCol,
-        height: state.boxHeight
-      };
-      row.push(col);
-    }
-    map.push(row);
-  }
+  const map = createMatrix(state)
   const layers = [...state.layers];
   const layer = layers.find(item => {
     return item.id === payload
@@ -130,6 +119,9 @@ function drawMatrixReducer(state: layer, matrixArr: Array<{x:number, y: number}>
   matrixArr.map((matrix) => {
     const x = matrix.x
     const y = matrix.y
+    if(!layer.matrix.get(x) || !layer.matrix.getIn([x, y])) {
+      return matrix
+    }
     const item = layer.matrix.getIn([x, y])
     const curBlock = state.curBlock as blockItem
     const obj  = {
@@ -140,6 +132,7 @@ function drawMatrixReducer(state: layer, matrixArr: Array<{x:number, y: number}>
       col: item.col
     }
     layer.matrix = layer.matrix.setIn([x, y], obj)
+    return matrix
   })
   const rLayers = layers.map((item) => {
     if(item.id === state.curLayerId ) {
@@ -158,7 +151,35 @@ function setBlockState(state: layer, payload: blockItem): layer {
 function setLayerState(state: layer, payload: number): layer {
   return {...state ,curLayerId: payload}
 }
-
+function setGridInf(state: layer, payload: GRIDINF) {
+  // 生成对应二维矩阵
+  const layers = [...state.layers]
+  layers.map(item => {
+    const matrixArr = item.matrix
+    const layerCp:Array<Array <any>> = []
+    for(let i = 0;i<payload.tableRow;i++) {
+      const layerCpItem: Array <any>= []
+      for(let j = 0;j<payload.tableCol;j++) {
+        // 之前存在本次也存在，好像不用变
+        if(matrixArr.get(i) && matrixArr.getIn([i, j])) {
+          layerCpItem[j] = matrixArr.getIn([i, j])
+        } else {
+          layerCpItem[j] = {
+            src: undefined,
+            height: payload.boxHeight,
+            width: payload.boxWidth,
+            row: j,
+            col: i
+          }
+        }
+      }
+      layerCp[i] = layerCpItem
+    }
+    item.matrix = List(layerCp)
+    return item
+  })
+  return {...state, ...payload, layers}
+}
 
 function layerReducer(state: layer = initState, action: layerActions): layer {
   switch (action.type) {
@@ -180,6 +201,8 @@ function layerReducer(state: layer = initState, action: layerActions): layer {
       return setLayerState(state, action.payload)
     case DRAW_MATRIX:
       return drawMatrixReducer(state, action.payload)
+    case SET_GRID_INF:
+      return setGridInf(state, action.payload)
     default:
       return { ...state };
   }

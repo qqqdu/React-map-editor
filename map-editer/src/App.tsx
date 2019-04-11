@@ -1,10 +1,10 @@
 import * as React from 'react';
 import './style/App.less';
 // import './style/font.less'
-import Utils from '@/components/utils'
-import Layer from '@/components/layer'
-import Block from '@/components/block'
-import Grid from '@/components/grid'
+import Utils from '@/container/utils'
+import Layer from '@/container/layer'
+import Block from '@/container/block'
+import Grid from '@/container/grid'
 
 class App extends React.Component {
   public render() {

@@ -173,7 +173,7 @@ function mapDispatchToProps(dispatch: any) {
       dispatch(Actions.toggleLayer(payload)),
     switchLayer: (payload: { index: number; type: upDown }) =>
       dispatch(Actions.switchLayer(payload)),
-    setCurLayer: (payload: number) => dispatch(Actions.SetCurLayer(payload)),
+    setCurLayer: (payload: number) => dispatch(Actions.setCurLayer(payload)),
     createMatrix: (payload: number) =>
       dispatch(Actions.createMatrix(payload)),
   };

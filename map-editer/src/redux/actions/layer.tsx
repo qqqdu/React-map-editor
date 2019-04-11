@@ -45,6 +45,10 @@ export interface DrawMatrix {
     type: constants.DRAW_MATRIX;
     payload: Array<{x:number, y: number}>;
 }
+export interface SetGridInf {
+  type: constants.SET_GRID_INF;
+  payload: constants.GRIDINF
+}
 export type gridActions = SetCurBlock | SetCurLayer
 export type layerActions =
   | ChangeLayerName
@@ -55,7 +59,8 @@ export type layerActions =
   | CreateMatrix
   | SetCurBlock
   | DrawMatrix
-  | SetCurLayer;
+  | SetCurLayer
+  | SetGridInf
 
 export function cgLayerNameAction(
   payload: constants.RENAME_INTER
@@ -107,9 +112,15 @@ export function setCurBlock(payload: blockItem): SetCurBlock {
         payload
     }
 }
-export function SetCurLayer(payload: number): SetCurLayer {
+export function setCurLayer(payload: number): SetCurLayer {
     return {
         type: constants.SET_CUR_LAYER,
         payload
     }
+}
+export function setGridInf(payload: constants.GRIDINF): SetGridInf {
+  return {
+    type: constants.SET_GRID_INF,
+    payload
+  }
 }

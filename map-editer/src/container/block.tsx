@@ -43,7 +43,9 @@ class BLockCom extends React.Component<Props, {}> {
               onChange={ev => this.changeImg(ev)}
             />
           </a>
-
+          <a href="javascript:;">
+            <Icon type="edit" />
+          </a>
           <Popconfirm
             title="Are you sure delete this task?"
             visible={this.state.visible}
