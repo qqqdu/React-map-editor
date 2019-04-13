@@ -69,7 +69,7 @@ function createLayer(state: layer, payload: { id: number }): layer {
     show: true,
     matrix: List([])
   });
-  return { ...state, layers };
+  return { ...state, layers,curLayerId: payload.id };
 }
 function toggleLayer(state: layer, payload: { id: number }): layer {
   return Object.assign({}, state, {

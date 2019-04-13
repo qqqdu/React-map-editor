@@ -161,7 +161,7 @@ class Grid extends React.Component<Props, {}> {
     const y =
       ev.pageY -
       Number(this.tableDom.offsetTop) -
-      document.documentElement.scrollTop
+      document.documentElement.scrollTop + this.tableDom.scrollTop
     const x =
       ev.pageX - Number(this.tableDom.offsetLeft) + this.tableDom.scrollLeft
     this.setState((prevState: any) => ({

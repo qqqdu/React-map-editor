@@ -53,17 +53,27 @@ class UtilCom extends React.Component<Props, {}> {
       <div className="util">
         <li className="tools">
           <Select value='菜单' style={{ width: 120 }}>
-              <Option value='导出'>
+              <Option value='新建'>
                 <p
                   style={{ width: '100%', height: '100%' }}
                   onClick={() => {
-                    this.exportJson()
+                    this.importJson()
+                  }}
+                >
+                  新建
+                </p>
+              </Option>
+              <Option value='导入'>
+                <p
+                  style={{ width: '100%', height: '100%' }}
+                  onClick={() => {
+                    this.importJson()
                   }}
                 >
                   导出
                 </p>
               </Option>
-              <Option value='导入'>
+              <Option value='导出'>
                 <p
                   style={{ width: '100%', height: '100%' }}
                   onClick={() => {
