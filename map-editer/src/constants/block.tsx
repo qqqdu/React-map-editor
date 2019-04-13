@@ -6,3 +6,7 @@ export type CREATE_BLOCK = typeof CREATE_BLOCK
 // 删除block
 export const DEL_BLOCK = 'DEL_BLOCK'
 export type DEL_BLOCK = typeof DEL_BLOCK
+
+// 修改block 
+export const EDIT_BLOCK = 'EDIT_BLOCK'
+export type EDIT_BLOCK = typeof EDIT_BLOCK

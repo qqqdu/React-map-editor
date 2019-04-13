@@ -49,6 +49,9 @@ export interface SetGridInf {
   type: constants.SET_GRID_INF;
   payload: constants.GRIDINF
 }
+export interface ShowLine {
+  type: constants.SHOW_LINE;
+}
 export type gridActions = SetCurBlock | SetCurLayer
 export type layerActions =
   | ChangeLayerName
@@ -61,6 +64,7 @@ export type layerActions =
   | DrawMatrix
   | SetCurLayer
   | SetGridInf
+  | ShowLine
 
 export function cgLayerNameAction(
   payload: constants.RENAME_INTER
@@ -122,5 +126,10 @@ export function setGridInf(payload: constants.GRIDINF): SetGridInf {
   return {
     type: constants.SET_GRID_INF,
     payload
+  }
+}
+export function showLine():ShowLine {
+  return {
+    type: constants.SHOW_LINE
   }
 }

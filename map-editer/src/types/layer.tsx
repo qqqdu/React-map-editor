@@ -24,4 +24,5 @@ export interface layer {
   // 单元格宽度和高度
   boxWidth: number;
   boxHeight: number;
+  showLine: boolean;
 }

@@ -17,7 +17,8 @@ import {
   SET_CUR_LAYER,
   DRAW_MATRIX,
   SET_GRID_INF,
-  GRIDINF
+  GRIDINF,
+  SHOW_LINE
 } from "@/constants/layer";
 // import matrixReducer from './matrixReducer'
 // import { INCREMENT_ENTHUSIASM, DECREMENT_ENTHUSIASM } from '../../constants/layer';
@@ -30,7 +31,8 @@ const initState = {
   boxWidth: 50,
   boxHeight: 50,
   past: [],
-  future: []
+  future: [],
+  showLine: true
 };
 // const initState = fromJS({
 //   layers: [],
@@ -180,7 +182,9 @@ function setGridInf(state: layer, payload: GRIDINF) {
   })
   return {...state, ...payload, layers}
 }
-
+function showLine(state: layer) {
+  return {...state, showLine: !state.showLine}
+}
 function layerReducer(state: layer = initState, action: layerActions): layer {
   switch (action.type) {
     case CHANGE_LAYER_NAME:
@@ -203,6 +207,8 @@ function layerReducer(state: layer = initState, action: layerActions): layer {
       return drawMatrixReducer(state, action.payload)
     case SET_GRID_INF:
       return setGridInf(state, action.payload)
+    case SHOW_LINE:
+      return showLine(state)
     default:
       return { ...state };
   }

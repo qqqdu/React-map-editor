@@ -24,28 +24,12 @@ interface Props {
   createBlock: (payload: blockItem) => void
   onUndo: () => void
   onRedo: () => void
-  setGridInf: (payload: constants.GRIDINF) => void
+  setGridInf: (payload: constants.GRIDINF) => void,
+  switchShowLine: () => void
 }
 
 class UtilCom extends React.Component<Props, {}> {
   public blockList: Array<blockItem> = []
-  private meauOptions = {
-    label: '菜单',
-    options: [
-      {
-        label: '导出',
-        fn: 'showConfirm'
-      },
-      {
-        label: '导入',
-        fn: 'showConfirm'
-      },
-      {
-        label: '属性',
-        fn: 'showConfirm'
-      }
-    ]
-  }
   public state = {
     visible: false,
     showNature: false,
@@ -61,23 +45,55 @@ class UtilCom extends React.Component<Props, {}> {
     super(props)
   }
   public render() {
+    let check
+    if(this.props.layer.showLine) {
+      check = (<Icon type="check" style={{ color: '#08c' }}/>)
+    }
     return (
       <div className="util">
-        <h3>工具栏</h3>
         <li className="tools">
-          <Select value={this.meauOptions.label} style={{ width: 120 }}>
-            {this.meauOptions.options.map(item => (
-              <Option value={item.label} key={item.label}>
+          <Select value='菜单' style={{ width: 120 }}>
+              <Option value='导出'>
+                <p
+                  style={{ width: '100%', height: '100%' }}
+                  onClick={() => {
+                    this.exportJson()
+                  }}
+                >
+                  导出
+                </p>
+              </Option>
+              <Option value='导入'>
+                <p
+                  style={{ width: '100%', height: '100%' }}
+                  onClick={() => {
+                    this.exportJson()
+                  }}
+                >
+                  导入
+                </p>
+              </Option>
+              <Option value='显示网格'>
+                <p
+                  style={{ width: '100%', height: '100%' }}
+                  onClick={() => {
+                    this.showHelpLine()
+                  }}
+                >
+                  显示网格
+                </p>
+                { check }
+              </Option>
+              <Option value='属性'>
                 <p
                   style={{ width: '100%', height: '100%' }}
                   onClick={() => {
                     this.showConfirm()
                   }}
                 >
-                  {item.label}
+                  属性
                 </p>
               </Option>
-            ))}
           </Select>
           <a
             href="javascript:;"
@@ -107,6 +123,15 @@ class UtilCom extends React.Component<Props, {}> {
         {this.renderNatureModel()}
       </div>
     )
+  }
+  public exportJson() {
+
+  }
+  public importJson() {
+
+  }
+  public showHelpLine() {
+    this.props.switchShowLine()
   }
   public renderNatureModel() {
     return (
@@ -256,7 +281,8 @@ function mapDispatchToProps(dispatch: any) {
     onUndo: () => dispatch(UndoActionCreators.undo()),
     onRedo: () => dispatch(UndoActionCreators.redo()),
     setGridInf: (payload: constants.GRIDINF) =>
-      dispatch(LayerActions.setGridInf(payload))
+      dispatch(LayerActions.setGridInf(payload)),
+    switchShowLine: () => dispatch(LayerActions.showLine())
   }
 }
 // 合并方法和属性到 Props 上
