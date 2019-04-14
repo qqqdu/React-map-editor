@@ -18,7 +18,8 @@ import {
   DRAW_MATRIX,
   SET_GRID_INF,
   GRIDINF,
-  SHOW_LINE
+  SHOW_LINE,
+  IMPORT_LAYER
 } from "@/constants/layer";
 // import matrixReducer from './matrixReducer'
 // import { INCREMENT_ENTHUSIASM, DECREMENT_ENTHUSIASM } from '../../constants/layer';
@@ -131,7 +132,8 @@ function drawMatrixReducer(state: layer, matrixArr: Array<{x:number, y: number}>
       height: curBlock.height,
       width: curBlock.width,
       row: item.row,
-      col: item.col
+      col: item.col,
+      name: curBlock.name
     }
     layer.matrix = layer.matrix.setIn([x, y], obj)
     return matrix
@@ -185,6 +187,13 @@ function setGridInf(state: layer, payload: GRIDINF) {
 function showLine(state: layer) {
   return {...state, showLine: !state.showLine}
 }
+function importLayer(state: layer, payload: layer) {
+  console.log(payload)
+  payload.layers.map(item => {
+    item.matrix = List(item.matrix)
+  })
+  return {...state, ...payload}
+}
 function layerReducer(state: layer = initState, action: layerActions): layer {
   switch (action.type) {
     case CHANGE_LAYER_NAME:
@@ -209,6 +218,8 @@ function layerReducer(state: layer = initState, action: layerActions): layer {
       return setGridInf(state, action.payload)
     case SHOW_LINE:
       return showLine(state)
+    case IMPORT_LAYER:
+      return importLayer(state, action.payload)
     default:
       return { ...state };
   }

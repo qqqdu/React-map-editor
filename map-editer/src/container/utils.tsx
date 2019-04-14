@@ -15,6 +15,7 @@ import { layer } from '../types/layer'
 const Option = Select.Option
 import { Map } from 'immutable'
 import * as constants from '@/constants/layer'
+import {saveFile, importFile} from '@/utils/saveFile'
 interface Props {
   blockList: Array<blockItem>
   canUndo: Boolean
@@ -24,8 +25,11 @@ interface Props {
   createBlock: (payload: blockItem) => void
   onUndo: () => void
   onRedo: () => void
-  setGridInf: (payload: constants.GRIDINF) => void,
+  setGridInf: (payload: constants.GRIDINF) => void
   switchShowLine: () => void
+  importBlock: (payload: Array<any>) => void;
+  importLayer: (payload: any) => void;
+  store: Map<string, any>
 }
 
 class UtilCom extends React.Component<Props, {}> {
@@ -46,64 +50,66 @@ class UtilCom extends React.Component<Props, {}> {
   }
   public render() {
     let check
-    if(this.props.layer.showLine) {
-      check = (<Icon type="check" style={{ color: '#08c' }}/>)
+    if (this.props.layer.showLine) {
+      check = <Icon type="check" style={{ color: '#08c' }} />
     }
     return (
       <div className="util">
         <li className="tools">
-          <Select value='菜单' style={{ width: 120 }}>
-              <Option value='新建'>
-                <p
-                  style={{ width: '100%', height: '100%' }}
-                  onClick={() => {
-                    this.importJson()
-                  }}
-                >
-                  新建
-                </p>
-              </Option>
-              <Option value='导入'>
-                <p
-                  style={{ width: '100%', height: '100%' }}
-                  onClick={() => {
-                    this.importJson()
-                  }}
-                >
-                  导出
-                </p>
-              </Option>
-              <Option value='导出'>
-                <p
-                  style={{ width: '100%', height: '100%' }}
-                  onClick={() => {
-                    this.exportJson()
-                  }}
-                >
-                  导入
-                </p>
-              </Option>
-              <Option value='显示网格'>
-                <p
-                  style={{ width: '100%', height: '100%' }}
-                  onClick={() => {
-                    this.showHelpLine()
-                  }}
-                >
-                  显示网格
-                </p>
-                { check }
-              </Option>
-              <Option value='属性'>
-                <p
-                  style={{ width: '100%', height: '100%' }}
-                  onClick={() => {
-                    this.showConfirm()
-                  }}
-                >
-                  属性
-                </p>
-              </Option>
+          <Select value="菜单" style={{ width: 120 }}>
+            <Option value="新建">
+              <p
+                style={{ width: '100%', height: '100%' }}
+                onClick={() => {
+                  // this.importJson()
+                }}
+              >
+                新建
+              </p>
+            </Option>
+            <Option value="导入">
+              <label htmlFor="jsonUpFile">
+                导入
+              </label>
+              <input
+                type="file"
+                className="file"
+                multiple={false}
+                id="jsonUpFile"
+                onChange={ev => this.importJson(ev)}
+              />
+            </Option>
+            <Option value="导出">
+              <p
+                style={{ width: '100%', height: '100%' }}
+                onClick={() => {
+                  this.exportJson()
+                }}
+              >
+                导出
+              </p>
+            </Option>
+            <Option value="显示网格">
+              <p
+                style={{ width: '100%', height: '100%' }}
+                onClick={() => {
+                  this.showHelpLine()
+                }}
+              >
+                显示网格
+              </p>
+              {check}
+            </Option>
+            <Option value="属性">
+              <p
+                style={{ width: '100%', height: '100%' }}
+                onClick={() => {
+                  this.showConfirm()
+                }}
+              >
+                属性
+              </p>
+            </Option>
           </Select>
           <a
             href="javascript:;"
@@ -135,10 +141,31 @@ class UtilCom extends React.Component<Props, {}> {
     )
   }
   public exportJson() {
+    const state: any = this.props.store.toJS()
 
+    state.layer = state.layer.present
+    saveFile(state)
   }
-  public importJson() {
-
+  public importJson(ev: any) {
+    const dom = document.getElementById('jsonUpFile') as HTMLInputElement
+    const files = dom.files as FileList
+    if (!files || !files.length) {
+      return
+    }
+    Array.from(files).map(file => {
+      const reader = new FileReader()
+      reader.readAsText(file)
+      reader.onloadstart = function() {
+        console.log('文件上传处理......')
+        
+      }
+      //操作完成
+      reader.onload = () => {
+        const state:any = importFile(reader.result as string)
+        this.props.importBlock(state.block.blockList)
+        this.props.importLayer(state.layer)
+      }
+    })
   }
   public showHelpLine() {
     this.props.switchShowLine()
@@ -281,7 +308,8 @@ export function mapStateToProps(StoreState: Map<string, any>) {
     blockList: block,
     canUndo: layer.past && layer.past.length > 0,
     canRedo: layer.future && layer.future.length > 0,
-    layer: layer.present
+    layer: layer.present,
+    store: StoreState
   }
 }
 function mapDispatchToProps(dispatch: any) {
@@ -292,7 +320,9 @@ function mapDispatchToProps(dispatch: any) {
     onRedo: () => dispatch(UndoActionCreators.redo()),
     setGridInf: (payload: constants.GRIDINF) =>
       dispatch(LayerActions.setGridInf(payload)),
-    switchShowLine: () => dispatch(LayerActions.showLine())
+    switchShowLine: () => dispatch(LayerActions.showLine()),
+    importBlock: (payload: Array<any>) => dispatch(Actions.importBLock(payload)),
+    importLayer: (payload: any) => dispatch(LayerActions.importLayer(payload))
   }
 }
 // 合并方法和属性到 Props 上

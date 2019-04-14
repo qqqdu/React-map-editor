@@ -18,8 +18,12 @@ export interface EditBlock {
     id: number
   }
 }
+export interface ImportBLOCK {
+    type: constants.IMPORT_BLOCK;
+    payload: Array<any>
+}
 
-export type blockActions = DelBlock | CreateBlock | EditBlock
+export type blockActions = DelBlock | CreateBlock | EditBlock | ImportBLOCK
 
 export function DelBlock(payload: { id: number }): DelBlock {
   return {
@@ -40,6 +44,12 @@ export function editBlock(payload: {
 }): EditBlock {
   return {
     type: constants.EDIT_BLOCK,
+    payload
+  }
+}
+export function importBLock(payload: Array<any>): ImportBLOCK {
+  return {
+    type: constants.IMPORT_BLOCK,
     payload
   }
 }

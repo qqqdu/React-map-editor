@@ -21,4 +21,5 @@ export interface matrixItem {
   row: number;
   col: number;
   height: number;
+  name: string;
 }

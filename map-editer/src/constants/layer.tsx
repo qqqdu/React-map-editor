@@ -55,3 +55,7 @@ export interface GRIDINF {
 // 辅助线
 export const SHOW_LINE ='SHOW_LINE';
 export type SHOW_LINE = typeof SHOW_LINE
+
+// 导入图层
+export const IMPORT_LAYER = 'IMPORT_LAYER';
+export type IMPORT_LAYER = typeof IMPORT_LAYER

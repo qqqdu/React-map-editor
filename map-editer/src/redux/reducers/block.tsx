@@ -1,6 +1,6 @@
 import { blockActions } from '../actions/block';
 import {  block, blockItem } from '@/types/block';
-import { DEL_BLOCK, CREATE_BLOCK, EDIT_BLOCK } from '@/constants/block';
+import { DEL_BLOCK, CREATE_BLOCK, EDIT_BLOCK , IMPORT_BLOCK} from '@/constants/block';
 import { fromJS, Map, List } from 'immutable';
 const initState= fromJS({
   blockList: List([])
@@ -13,6 +13,8 @@ export function block(state: Map<string, any> = initState, action: blockActions)
       return createBlock(state, action.payload)
     case EDIT_BLOCK:
       return editBlock(state, action.payload)
+    case IMPORT_BLOCK:
+      return importBlock(state, action.payload)
   }
   return state
 }
@@ -36,4 +38,8 @@ function editBlock(state: Map<string, any>, payload: {width: number,height: numb
     height: payload.height
   })
   return state.set('blockList', List(blocks))
+}
+function importBlock(state: Map<string, any>, payload: Array<any>) {
+  console.log(payload)
+  return state.set('blockList', List(payload))
 }

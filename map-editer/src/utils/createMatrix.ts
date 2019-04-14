@@ -10,7 +10,8 @@ export default function createMatrix(state: layer) {
         width: state.boxWidth,
         row: state.tableRow,
         col: state.tableCol,
-        height: state.boxHeight
+        height: state.boxHeight,
+        name: ''
       };
       row.push(col);
     }
