@@ -3,7 +3,8 @@ export interface blockItem {
   src: string,
   width: number,
   height: number,
-  name: string
+  name: string,
+  extra: Array<any>
 }
 
 export interface block {

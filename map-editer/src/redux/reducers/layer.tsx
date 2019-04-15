@@ -133,7 +133,8 @@ function drawMatrixReducer(state: layer, matrixArr: Array<{x:number, y: number}>
       width: curBlock.width,
       row: item.row,
       col: item.col,
-      name: curBlock.name
+      name: curBlock.name,
+      extra: curBlock.extra
     }
     layer.matrix = layer.matrix.setIn([x, y], obj)
     return matrix

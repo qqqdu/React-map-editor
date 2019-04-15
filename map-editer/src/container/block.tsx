@@ -6,7 +6,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import '@/style/block.less'
-import { Icon, Popconfirm, Modal, Form, InputNumber } from 'antd/lib'
+import { Icon, Popconfirm, Modal, Form, InputNumber, Input } from 'antd/lib'
 import * as Actions from '@/redux/actions/block'
 import { blockItem } from '@/types/block'
 import { layer } from '@/types/layer'
@@ -17,7 +17,7 @@ interface Props {
   delBlock: (payload: { id: number }) => void
   createBlock: (payload: blockItem) => void
   setCurBlock: (payload: blockItem | undefined) => void
-  editBlock: (payload: {width: number, height: number, id: number}) => void;
+  editBlock: (payload: { width: number; height: number; id: number }) => void
   curBlock: blockItem
 }
 class BLockCom extends React.Component<Props, {}> {
@@ -27,7 +27,8 @@ class BLockCom extends React.Component<Props, {}> {
     nowBlock: -1,
     showNature: false,
     width: 0,
-    height: 0
+    height: 0,
+    extra: []
   }
   constructor(props: Props) {
     super(props)
@@ -100,7 +101,8 @@ class BLockCom extends React.Component<Props, {}> {
     this.setState({
       showNature: true,
       width: this.props.curBlock.width,
-      height: this.props.curBlock.height
+      height: this.props.curBlock.height,
+      extra: this.props.curBlock.extra
     })
   }
   public renderNatureModel() {
@@ -129,8 +131,87 @@ class BLockCom extends React.Component<Props, {}> {
             />
           </Form.Item>
         </Form>
+        <Form layout="inline">
+          <Form.Item label="额外属性">
+            <a href="javascript:;">
+              <Icon type="plus-circle" onClick={() => {this.addExtra()}}/>
+            </a>
+          </Form.Item>
+        </Form>
+        {this.extraRender()}
       </Modal>
     )
+  }
+  public addExtra() {
+    this.setState({
+      extra: [...this.state.extra,{}]
+    })
+  }
+  public removeExtra(obj: any) {
+    const extra:any = [...this.state.extra]
+    const index = this.state.extra.findIndex(ev => {
+      return ev === obj
+    });
+    extra.splice(index, 1)
+    this.setState(() => ({
+      extra
+    }))
+  }
+  public changeKey(item:any, event:any) {
+    const extra:any = [...this.state.extra]
+    const index = this.state.extra.findIndex(ev => {
+      return ev === item
+    });
+    const key = Object.keys(item)[0] ? Object.keys(item)[0] : ''
+    const obj = {}
+    obj[event.target.value] = item[key]
+    extra.splice(index, 1, obj)
+    event.persist()
+    this.setState(() => ({
+      extra
+    }))
+  }
+  public changeVal(item: any, event:any) {
+    const extra:any = [...this.state.extra]
+    const index = this.state.extra.findIndex(ev => {
+      return ev === item
+    });
+    const key = Object.keys(item)[0] ? Object.keys(item)[0] : ''
+    const obj = {}
+    obj[key] = event.target.value
+    extra.splice(index, 1, obj)
+    event.persist()
+    console.log(extra)
+    this.setState(() => ({
+      extra
+    }))
+  }
+  public extraRender() {
+    // {type: 2}
+    return this.state.extra.map((item: any, index) => {
+      const key = Object.keys(item)[0] ? Object.keys(item)[0] : ''
+      const value = item[key] ? item[key] : ''
+      return (
+        <Form layout="inline" key={index}>
+          <Form.Item label="">
+            <Input style={{ width: '100px' }} placeholder="key" value={key} onChange={(ev) => {this.changeKey(item, ev)}}/> :
+          </Form.Item>
+          <Form.Item label="">
+            <Input
+              style={{ width: '100px' }}
+              placeholder="value"
+              value={value}
+              onChange={(ev) => {this.changeVal(item, ev)}}
+            />
+          </Form.Item>
+          <Form.Item label="">
+            <a href="javascript:;">
+              <Icon type="minus-circle" onClick={() => this.removeExtra(item)}/>
+            </a>
+          </Form.Item>
+        </Form>
+      )
+    })
   }
   public changeWidth(ev: number) {
     this.setState({
@@ -151,7 +232,7 @@ class BLockCom extends React.Component<Props, {}> {
       height: this.state.height,
       id: this.props.curBlock.id
     })
-    setTimeout(()=>{
+    setTimeout(() => {
       this.switchBlock(this.props.curBlock.id)
     })
   }
@@ -212,7 +293,8 @@ class BLockCom extends React.Component<Props, {}> {
             width: image.width,
             height: image.height,
             name: file.name,
-            id: Math.random()
+            id: Math.random(),
+            extra: []
           })
         }
       }
