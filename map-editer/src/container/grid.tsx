@@ -20,6 +20,7 @@ interface Props {
   layers: Array<LayerItem>
   layer: layer
   drawMatrix: (payload: Array<{ x: number; y: number }>) => void
+  delErserBlock:(payload: Array<{ x: number; y: number }>) => void
 }
 class Grid extends React.Component<Props, {}> {
   public touch: boolean = false
@@ -161,7 +162,8 @@ class Grid extends React.Component<Props, {}> {
     const y =
       ev.pageY -
       Number(this.tableDom.offsetTop) -
-      document.documentElement.scrollTop + this.tableDom.scrollTop
+      document.documentElement.scrollTop +
+      this.tableDom.scrollTop
     const x =
       ev.pageX - Number(this.tableDom.offsetLeft) + this.tableDom.scrollLeft
     this.setState((prevState: any) => ({
@@ -218,9 +220,6 @@ class Grid extends React.Component<Props, {}> {
     endX: number,
     endY: number
   ) {
-    if (!this.props.curBlock) {
-      return
-    }
     const curChoose: Array<{ x: number; y: number }> = []
     for (let i = startX; i < endX; i++) {
       for (let j = startY; j < endY; j++) {
@@ -233,7 +232,16 @@ class Grid extends React.Component<Props, {}> {
         //   (this.matrix[j][i].src = (this.props.curBlock as blockItem).src);
       }
     }
-    this.props.drawMatrix(curChoose)
+    console.log(this.props.layer.eraser)
+    // 选中了橡皮擦
+    if (this.props.layer.eraser) {
+      this.props.delErserBlock(curChoose)
+    } else {
+      if (!this.props.curBlock) {
+        return
+      }
+      this.props.drawMatrix(curChoose)
+    }
   }
   public upMouse(ev: any) {
     this.touch = false
@@ -259,7 +267,9 @@ export function mapStateToProps(StoreState: Map<string, any>) {
 function mapDispatchToProps(dispatch: any) {
   return {
     drawMatrix: (payload: Array<{ x: number; y: number }>) =>
-      dispatch(layerActions.drawMatrix(payload))
+      dispatch(layerActions.drawMatrix(payload)),
+    delErserBlock: (payload: Array<{ x: number; y: number }>) =>
+      dispatch(layerActions.delErserBlock(payload))
   }
 }
 // 合并方法和属性到 Props 上

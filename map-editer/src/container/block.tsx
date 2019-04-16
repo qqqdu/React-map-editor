@@ -17,8 +17,10 @@ interface Props {
   delBlock: (payload: { id: number }) => void
   createBlock: (payload: blockItem) => void
   setCurBlock: (payload: blockItem | undefined) => void
-  editBlock: (payload: { width: number; height: number; id: number }) => void
-  curBlock: blockItem
+  editBlock: (payload: { width: number; height: number; id: number,extra: Array<any>}) => void
+  switchErser: () => void;
+  curBlock: blockItem;
+  layer: layer
 }
 class BLockCom extends React.Component<Props, {}> {
   public blockList: Array<blockItem> = []
@@ -78,6 +80,10 @@ class BLockCom extends React.Component<Props, {}> {
     )
   }
   public renderImg() {
+    const id =
+      this.props.curBlock && this.props.curBlock.id
+        ? this.props.curBlock.id
+        : -1
     return this.props.blockList.map(block => {
       return (
         <img
@@ -87,7 +93,7 @@ class BLockCom extends React.Component<Props, {}> {
           style={{
             width: block.width,
             height: block.height,
-            border: block.id === this.state.nowBlock ? '1px solid red' : ''
+            border: block.id === id ? '1px solid red' : ''
           }}
         />
       )
@@ -134,7 +140,12 @@ class BLockCom extends React.Component<Props, {}> {
         <Form layout="inline">
           <Form.Item label="额外属性">
             <a href="javascript:;">
-              <Icon type="plus-circle" onClick={() => {this.addExtra()}}/>
+              <Icon
+                type="plus-circle"
+                onClick={() => {
+                  this.addExtra()
+                }}
+              />
             </a>
           </Form.Item>
         </Form>
@@ -144,24 +155,24 @@ class BLockCom extends React.Component<Props, {}> {
   }
   public addExtra() {
     this.setState({
-      extra: [...this.state.extra,{}]
+      extra: [...this.state.extra, {}]
     })
   }
   public removeExtra(obj: any) {
-    const extra:any = [...this.state.extra]
+    const extra: any = [...this.state.extra]
     const index = this.state.extra.findIndex(ev => {
       return ev === obj
-    });
+    })
     extra.splice(index, 1)
     this.setState(() => ({
       extra
     }))
   }
-  public changeKey(item:any, event:any) {
-    const extra:any = [...this.state.extra]
+  public changeKey(item: any, event: any) {
+    const extra: any = [...this.state.extra]
     const index = this.state.extra.findIndex(ev => {
       return ev === item
-    });
+    })
     const key = Object.keys(item)[0] ? Object.keys(item)[0] : ''
     const obj = {}
     obj[event.target.value] = item[key]
@@ -171,11 +182,11 @@ class BLockCom extends React.Component<Props, {}> {
       extra
     }))
   }
-  public changeVal(item: any, event:any) {
-    const extra:any = [...this.state.extra]
+  public changeVal(item: any, event: any) {
+    const extra: any = [...this.state.extra]
     const index = this.state.extra.findIndex(ev => {
       return ev === item
-    });
+    })
     const key = Object.keys(item)[0] ? Object.keys(item)[0] : ''
     const obj = {}
     obj[key] = event.target.value
@@ -194,19 +205,32 @@ class BLockCom extends React.Component<Props, {}> {
       return (
         <Form layout="inline" key={index}>
           <Form.Item label="">
-            <Input style={{ width: '100px' }} placeholder="key" value={key} onChange={(ev) => {this.changeKey(item, ev)}}/> :
+            <Input
+              style={{ width: '100px' }}
+              placeholder="key"
+              value={key}
+              onChange={ev => {
+                this.changeKey(item, ev)
+              }}
+            />{' '}
+            :
           </Form.Item>
           <Form.Item label="">
             <Input
               style={{ width: '100px' }}
               placeholder="value"
               value={value}
-              onChange={(ev) => {this.changeVal(item, ev)}}
+              onChange={ev => {
+                this.changeVal(item, ev)
+              }}
             />
           </Form.Item>
           <Form.Item label="">
             <a href="javascript:;">
-              <Icon type="minus-circle" onClick={() => this.removeExtra(item)}/>
+              <Icon
+                type="minus-circle"
+                onClick={() => this.removeExtra(item)}
+              />
             </a>
           </Form.Item>
         </Form>
@@ -230,7 +254,8 @@ class BLockCom extends React.Component<Props, {}> {
     this.props.editBlock({
       width: this.state.width,
       height: this.state.height,
-      id: this.props.curBlock.id
+      id: this.props.curBlock.id,
+      extra: this.state.extra
     })
     setTimeout(() => {
       this.switchBlock(this.props.curBlock.id)
@@ -252,6 +277,12 @@ class BLockCom extends React.Component<Props, {}> {
     console.log('设置当前图块')
     console.log(curBlock)
     this.props.setCurBlock(curBlock)
+    console.log('橡皮擦状态')
+    console.log(this.props.layer.eraser)
+    // 当前是橡皮擦，切换
+    if(this.props.layer.eraser) {
+      this.props.switchErser()
+    }
   }
   public handleVisibleChange(visible: boolean) {
     if (this.state.nowBlock <= 0) {
@@ -307,7 +338,8 @@ export function mapStateToProps(StoreState: Map<string, any>) {
   const layer = StoreState.get('layer').present as layer
   return {
     blockList: block,
-    curBlock: layer.curBlock
+    curBlock: layer.curBlock,
+    layer
   }
 }
 function mapDispatchToProps(dispatch: any) {
@@ -316,8 +348,9 @@ function mapDispatchToProps(dispatch: any) {
     createBlock: (payload: blockItem) => dispatch(Actions.createBlock(payload)),
     setCurBlock: (payload: blockItem) =>
       dispatch(LayerActions.setCurBlock(payload)),
-    editBlock: (payload: { width: number; height: number; id: number }) =>
-      dispatch(Actions.editBlock(payload))
+    editBlock: (payload: { width: number; height: number; id: number,extra:Array<any> }) =>
+      dispatch(Actions.editBlock(payload)),
+    switchErser: () => dispatch(LayerActions.switchErser())
   }
 }
 // 合并方法和属性到 Props 上

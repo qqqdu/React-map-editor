@@ -56,6 +56,13 @@ export interface ImportLayer {
   type: constants.IMPORT_LAYER;
   payload: any
 }
+export interface SwitchErser {
+  type: constants.SWITCH_ERSER;
+}
+export interface DelErserBlock {
+  type: constants.DEL_ERSER_BLOCK;
+  payload: Array<{x:number, y: number}>;
+}
 export type gridActions = SetCurBlock | SetCurLayer
 export type layerActions =
   | ChangeLayerName
@@ -70,6 +77,8 @@ export type layerActions =
   | SetGridInf
   | ShowLine
   | ImportLayer
+  | SwitchErser
+  | DelErserBlock
 
 export function cgLayerNameAction(
   payload: constants.RENAME_INTER
@@ -141,6 +150,17 @@ export function showLine():ShowLine {
 export function importLayer(payload: any):ImportLayer {
   return {
     type: constants.IMPORT_LAYER,
+    payload
+  }
+}
+export function switchErser(): SwitchErser{
+  return {
+    type: constants.SWITCH_ERSER
+  }
+}
+export function delErserBlock(payload: Array<{x:number, y: number}>):DelErserBlock {
+  return {
+    type: constants.DEL_ERSER_BLOCK,
     payload
   }
 }

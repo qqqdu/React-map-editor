@@ -15,7 +15,7 @@ import { layer } from '../types/layer'
 const Option = Select.Option
 import { Map } from 'immutable'
 import * as constants from '@/constants/layer'
-import {saveFile, importFile} from '@/utils/saveFile'
+import { saveFile, importFile } from '@/utils/saveFile'
 interface Props {
   blockList: Array<blockItem>
   canUndo: Boolean
@@ -27,8 +27,9 @@ interface Props {
   onRedo: () => void
   setGridInf: (payload: constants.GRIDINF) => void
   switchShowLine: () => void
-  importBlock: (payload: Array<any>) => void;
-  importLayer: (payload: any) => void;
+  importBlock: (payload: Array<any>) => void
+  importLayer: (payload: any) => void
+  switchEraser: () => void
   store: Map<string, any>
 }
 
@@ -49,9 +50,34 @@ class UtilCom extends React.Component<Props, {}> {
     super(props)
   }
   public render() {
-    let check
+    let check;
     if (this.props.layer.showLine) {
       check = <Icon type="check" style={{ color: '#08c' }} />
+    }
+    let eraser
+    if (this.props.layer.eraser) {
+      eraser = (
+        <a
+          href="javascript:;"
+          style={{ color: '#08c' }}
+          onClick={() => {
+            this.switchEraser()
+          }}
+        >
+          <Icon type="shake" />
+        </a>
+      )
+    } else {
+      eraser = (
+        <a
+          href="javascript:;"
+          onClick={() => {
+            this.switchEraser()
+          }}
+        >
+          <Icon type="shake" />
+        </a>
+      )
     }
     return (
       <div className="util">
@@ -68,9 +94,7 @@ class UtilCom extends React.Component<Props, {}> {
               </p>
             </Option>
             <Option value="导入">
-              <label htmlFor="jsonUpFile">
-                导入
-              </label>
+              <label htmlFor="jsonUpFile">导入</label>
               <input
                 type="file"
                 className="file"
@@ -111,14 +135,7 @@ class UtilCom extends React.Component<Props, {}> {
               </p>
             </Option>
           </Select>
-          <a
-            href="javascript:;"
-            onClick={() => {
-              this.onUndo()
-            }}
-          >
-            <Icon type="shake" />
-          </a>
+          {eraser}
           <a
             href="javascript:;"
             onClick={() => {
@@ -140,6 +157,9 @@ class UtilCom extends React.Component<Props, {}> {
       </div>
     )
   }
+  public switchEraser() {
+    this.props.switchEraser()
+  }
   public exportJson() {
     const state: any = this.props.store.toJS()
 
@@ -157,11 +177,10 @@ class UtilCom extends React.Component<Props, {}> {
       reader.readAsText(file)
       reader.onloadstart = function() {
         console.log('文件上传处理......')
-        
       }
       //操作完成
       reader.onload = () => {
-        const state:any = importFile(reader.result as string)
+        const state: any = importFile(reader.result as string)
         this.props.importBlock(state.block.blockList)
         this.props.importLayer(state.layer)
       }
@@ -321,8 +340,10 @@ function mapDispatchToProps(dispatch: any) {
     setGridInf: (payload: constants.GRIDINF) =>
       dispatch(LayerActions.setGridInf(payload)),
     switchShowLine: () => dispatch(LayerActions.showLine()),
-    importBlock: (payload: Array<any>) => dispatch(Actions.importBLock(payload)),
-    importLayer: (payload: any) => dispatch(LayerActions.importLayer(payload))
+    importBlock: (payload: Array<any>) =>
+      dispatch(Actions.importBLock(payload)),
+    importLayer: (payload: any) => dispatch(LayerActions.importLayer(payload)),
+    switchEraser: () => dispatch(LayerActions.switchErser())
   }
 }
 // 合并方法和属性到 Props 上

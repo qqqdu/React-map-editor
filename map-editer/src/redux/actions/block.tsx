@@ -15,7 +15,8 @@ export interface EditBlock {
   payload: {
     width: number
     height: number,
-    id: number
+    id: number,
+    extra: Array<any>
   }
 }
 export interface ImportBLOCK {
@@ -40,7 +41,8 @@ export function createBlock(payload: blockItem): CreateBlock {
 export function editBlock(payload: {
   width: number
   height: number,
-  id: number
+  id: number,
+  extra: Array<any>
 }): EditBlock {
   return {
     type: constants.EDIT_BLOCK,

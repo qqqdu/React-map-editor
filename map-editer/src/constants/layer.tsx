@@ -59,3 +59,10 @@ export type SHOW_LINE = typeof SHOW_LINE
 // 导入图层
 export const IMPORT_LAYER = 'IMPORT_LAYER';
 export type IMPORT_LAYER = typeof IMPORT_LAYER
+
+// 切换橡皮擦
+export const SWITCH_ERSER = 'SWITCH_ERSER';
+export type SWITCH_ERSER = typeof SWITCH_ERSER
+// 删除图层里的图块
+export const DEL_ERSER_BLOCK = 'DEL_ERSER_BLOCK';
+export type DEL_ERSER_BLOCK = typeof DEL_ERSER_BLOCK

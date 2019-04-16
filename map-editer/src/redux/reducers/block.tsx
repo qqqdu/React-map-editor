@@ -28,14 +28,16 @@ function createBlock(state: Map<string, any>, payload: blockItem): Map<any, Arra
   blocks.push(payload)
   return state.set('blockList', List(blocks))
 }
-function editBlock(state: Map<string, any>, payload: {width: number,height: number, id: number}) {
+function editBlock(state: Map<string, any>, payload: {width: number,height: number, id: number,
+  extra: Array<any>}) {
   const blocks = (state.get('blockList') as List<blockItem>).toJS()
   let curBlock = blocks.find(item => {
     return item.id === payload.id
   })
   Object.assign(curBlock, {
     width: payload.width, 
-    height: payload.height
+    height: payload.height,
+    extra: payload.extra
   })
   return state.set('blockList', List(blocks))
 }

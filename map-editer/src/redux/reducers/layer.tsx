@@ -19,7 +19,9 @@ import {
   SET_GRID_INF,
   GRIDINF,
   SHOW_LINE,
-  IMPORT_LAYER
+  IMPORT_LAYER,
+  SWITCH_ERSER,
+  DEL_ERSER_BLOCK
 } from "@/constants/layer";
 // import matrixReducer from './matrixReducer'
 // import { INCREMENT_ENTHUSIASM, DECREMENT_ENTHUSIASM } from '../../constants/layer';
@@ -33,7 +35,8 @@ const initState = {
   boxHeight: 50,
   past: [],
   future: [],
-  showLine: true
+  showLine: true,
+  eraser: false
 };
 // const initState = fromJS({
 //   layers: [],
@@ -195,6 +198,45 @@ function importLayer(state: layer, payload: layer) {
   })
   return {...state, ...payload}
 }
+function switchErser(state: layer) {
+  if(!state.eraser) {
+    return {...state, eraser: !state.eraser, curBlock: undefined}
+  }
+  return {...state, eraser: !state.eraser}
+}
+function delErserBlock(state: layer, payload: Array<{x:number, y: number}>) {
+  const layers = [...state.layers]
+  const layer = Object.assign({}, layers.find(item => {
+    return item.id === state.curLayerId 
+  }) as LayerItem)
+  payload.map((matrix) => {
+    const x = matrix.x
+    const y = matrix.y
+    if(!layer.matrix.get(x) || !layer.matrix.getIn([x, y])) {
+      return matrix
+    }
+    const item = layer.matrix.getIn([x, y])
+    const obj  = {
+      src: undefined,
+      height: state.boxHeight,
+      width: state.boxWidth,
+      row: item.row,
+      col: item.col,
+      name: '',
+      extra: []
+    }
+    layer.matrix = layer.matrix.setIn([x, y], obj)
+    return matrix
+  })
+  const rLayers = layers.map((item) => {
+    if(item.id === state.curLayerId ) {
+      return layer
+    }
+    return item
+  })
+  console.log(rLayers)
+  return {...state, layers: rLayers}
+}
 function layerReducer(state: layer = initState, action: layerActions): layer {
   switch (action.type) {
     case CHANGE_LAYER_NAME:
@@ -221,6 +263,10 @@ function layerReducer(state: layer = initState, action: layerActions): layer {
       return showLine(state)
     case IMPORT_LAYER:
       return importLayer(state, action.payload)
+    case SWITCH_ERSER:
+      return switchErser(state)
+    case DEL_ERSER_BLOCK:
+      return delErserBlock(state, action.payload)
     default:
       return { ...state };
   }

@@ -25,4 +25,5 @@ export interface layer {
   boxWidth: number;
   boxHeight: number;
   showLine: boolean;
+  eraser: boolean;
 }
