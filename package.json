@@ -2,6 +2,7 @@
   "name": "map-editer",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://qqqdu.github.io/React-map-editer",
   "dependencies": {
     "@types/file-saver": "^2.0.0",
     "@types/immutable": "^3.8.7",
@@ -22,6 +23,7 @@
     "file-saver": "^2.0.1",
     "fork-ts-checker-webpack-plugin": "^0.2.8",
     "fs-extra": "3.0.1",
+    "gh-pages": "^2.0.1",
     "html-webpack-plugin": "2.29.0",
     "immutable": "^4.0.0-rc.12",
     "jest": "20.0.4",
@@ -62,7 +64,9 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
