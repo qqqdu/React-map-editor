@@ -10,8 +10,46 @@ http://qqqdu.com/React-map-editer/
 
 ## 导入demo  
 
-在左上角的导入按钮中，导入根目录中的 `Hello World.json` 地图资源文件，得益于 图片被转成了 `base 64` 字符串，你可以  
-快捷的预览到地图效果，而不需要下载图片原资源
+在左上角的导入按钮中，导入根目录中的 `Hello World.json` 地图资源文件，得益于 图片被转成了 `base 64` 字符串，你可以快捷的预览到地图效果，而不需要下载图片原资源  
+## 导出demo  
+
+现可以导出两种类型，一种编辑器可以解析的地图文件，一种游戏引擎解析的地图文件，点击左上角导出，可选择导出类型  
+
+## 游戏内应用  
+目前，在游戏内解析地图文件还未完成，首先会做一款基于白鹭引擎的解析脚本，现在你可以自己实现简单的解析脚本，地图json格式为：  
+``` typescript
+
+export interface matrixItem {
+  src: string | undefined;
+  width: number;
+  row: number;
+  col: number;
+  height: number;
+  name: string;
+  extra?: Array<any: any>
+}
+
+export interface LayerItem {
+  // 图层id
+  id: number,
+  // 图层名称
+  name: string,
+  // 是否显示
+  show: boolean,
+  matrix: Array<Array<matrixItem>>
+}
+export interface layer { 
+  layers: Array<LayerItem>;
+  // 表格横轴个数
+  tableRow: number;
+  // 表格纵轴个数
+  tableCol: number;
+  // 单元格宽度和高度
+  boxWidth: number;
+  boxHeight: number;
+  name: string
+}
+```
 
 ## 编辑器  
 
@@ -45,6 +83,5 @@ http://qqqdu.com/React-map-editer/
 - 网格：是否显示网格  
 
 ## TODO  
-
-- 导出真正的地图json文件（现json的简版）  
-- 编写白鹭引擎地图编辑器
+  
+- 编写白鹭引擎地图解析脚本

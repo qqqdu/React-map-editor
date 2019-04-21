@@ -24,7 +24,7 @@ import { layer } from '../types/layer'
 const Option = Select.Option
 import { Map } from 'immutable'
 import * as constants from '@/constants/layer'
-import { saveFile, importFile } from '@/utils/saveFile'
+import { saveFile, importFile, saveGameFile } from '@/utils/saveFile'
 interface Props {
   blockList: Array<blockItem>
   canUndo: Boolean
@@ -50,6 +50,8 @@ class UtilCom extends React.Component<Props, {}> {
     nowBlock: -1,
     // 是否新建
     isCreate: false,
+    showExport: false,
+    mapType: 1,
     gridInf: {
       tableRow: 0,
       tableCol: 0,
@@ -95,7 +97,10 @@ class UtilCom extends React.Component<Props, {}> {
       <div className="util">
         <li className="tools">
           <Select value="菜单" style={{ width: 120 }}>
-            <Option value="新建" className={!this.props.layer.name ? 'show': 'hidden'}>
+            <Option
+              value="新建"
+              className={!this.props.layer.name ? 'show' : 'hidden'}
+            >
               <p
                 style={{ width: '100%', height: '100%' }}
                 onClick={() => {
@@ -116,7 +121,10 @@ class UtilCom extends React.Component<Props, {}> {
                 onChange={ev => this.importJson(ev)}
               />
             </Option>
-            <Option value="导出" className={this.props.layer.name ? 'show': 'hidden'}>
+            <Option
+              value="导出"
+              className={this.props.layer.name ? 'show' : 'hidden'}
+            >
               <p
                 style={{ width: '100%', height: '100%' }}
                 onClick={() => {
@@ -137,7 +145,10 @@ class UtilCom extends React.Component<Props, {}> {
               </p>
               {check}
             </Option>
-            <Option value="属性" className={this.props.layer.name ? 'show': 'hidden'}>
+            <Option
+              value="属性"
+              className={this.props.layer.name ? 'show' : 'hidden'}
+            >
               <p
                 style={{ width: '100%', height: '100%' }}
                 onClick={() => {
@@ -167,6 +178,7 @@ class UtilCom extends React.Component<Props, {}> {
           </a>
         </li>
         {this.renderNatureModel()}
+        {this.renderExportModel()}
       </div>
     )
   }
@@ -174,10 +186,9 @@ class UtilCom extends React.Component<Props, {}> {
     this.props.switchEraser()
   }
   public exportJson() {
-    const state: any = this.props.store.toJS()
-
-    state.layer = state.layer.present
-    saveFile(state)
+    this.setState({
+      showExport: true
+    })
   }
   public importJson(ev: any) {
     const dom = document.getElementById('jsonUpFile') as HTMLInputElement
@@ -194,7 +205,10 @@ class UtilCom extends React.Component<Props, {}> {
       console.log(file)
       //操作完成
       reader.onload = () => {
-        const state: any = importFile(reader.result as string, file.name.split('.')[0])
+        const state: any = importFile(
+          reader.result as string,
+          file.name.split('.')[0]
+        )
         this.props.importBlock(state.block.blockList)
         this.props.importLayer(state.layer)
       }
@@ -202,6 +216,60 @@ class UtilCom extends React.Component<Props, {}> {
   }
   public showHelpLine() {
     this.props.switchShowLine()
+  }
+  public renderExportModel() {
+    return (
+      <Modal
+        title="选择导出类型"
+        onOk={() => this.handleExportOk()}
+        onCancel={() => this.handleExportCancel()}
+        visible={this.state.showExport}
+      >
+        <a
+          href="javascript:;"
+          className={this.state.mapType === 1 ? 'choose export_choose' : 'export_choose'}
+          onClick={() => {
+            this.setState({ mapType: 1 })
+          }}
+        >
+          Map 地图文件<span>(可再次导入进行编辑)</span>
+        </a>
+        <a
+          href="javascript:;"
+          className={this.state.mapType === 2 ? 'choose export_choose' : 'export_choose'}
+          onClick={() => {
+            this.setState({ mapType: 2 })
+          }}
+        >
+          游戏 地图文件<span>(直接在游戏内解析)</span>
+        </a>
+      </Modal>
+    )
+  }
+  public handleExportOk() {
+    this.setState({
+      showExport: false
+    })
+    if (this.state.mapType === 1) {
+      this.exportMap()
+    } else {
+      this.exportGame()
+    }
+  }
+  public handleExportCancel() {
+    this.setState({
+      showExport: false
+    })
+  }
+  public exportMap() {
+    const state: any = this.props.store.toJS()
+    state.layer = state.layer.present
+    saveFile(state)
+  }
+  public exportGame() {
+    const state: any = this.props.store.toJS()
+    state.layer = state.layer.present
+    saveGameFile(state)
   }
   public renderNatureModel() {
     const title = this.state.isCreate ? '新建项目' : '网格属性'
@@ -213,7 +281,10 @@ class UtilCom extends React.Component<Props, {}> {
         onCancel={() => this.handleCancel()}
       >
         <Form layout="inline">
-          <Row gutter={24} className={!this.props.layer.name ? 'show': 'hidden'}>
+          <Row
+            gutter={24}
+            className={!this.props.layer.name ? 'show' : 'hidden'}
+          >
             <Col span={24}>
               <Form.Item label="地图名称">
                 <Input
@@ -287,7 +358,7 @@ class UtilCom extends React.Component<Props, {}> {
     this.setState({
       showNature: false
     })
-    if(this.state.isCreate && !this.state.gridInf.name) {
+    if (this.state.isCreate && !this.state.gridInf.name) {
       this.setState((prevState: any) => ({
         gridInf: {
           ...prevState.gridInf,
@@ -295,7 +366,7 @@ class UtilCom extends React.Component<Props, {}> {
         }
       }))
     }
-    this.props.setGridInf({...this.state.gridInf, name: 'Hello World'})
+    this.props.setGridInf({ ...this.state.gridInf, name: 'Hello World' })
   }
   public changeCol(ev: number) {
     this.setState((prevState: any) => ({

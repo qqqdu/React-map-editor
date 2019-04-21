@@ -27,6 +27,22 @@ export function saveFile(file: StoreState) {
   var blob = new Blob([fileString], { type: 'text/plain;charset=utf-8' })
   saveAs(blob, `${file.layer.name}.json`)
 }
+export function saveGameFile(file: StoreState) {
+  file.layer.layers.forEach(item => {
+    item.matrix.forEach(row => {
+      row.forEach(col => {
+        delete col.src
+      })
+    })
+  })
+  const delName = ['curBlock', 'curLayerId', 'eraser', 'showLine', 'past', 'future']
+  delName.map((val) => {
+    delete file.layer[val]
+  })
+  const fileString = JSON.stringify({...file.layer})
+  var blob = new Blob([fileString], { type: 'text/plain;charset=utf-8' })
+  saveAs(blob, `${file.layer.name}.game.json`)
+}
 export function importFile(file: string,name: string) {
   const fileObj:any = JSON.parse(file)
   console.log(fileObj)
