@@ -16,7 +16,8 @@ http://qqqdu.com/React-map-editer/
 现可以导出两种类型，一种编辑器可以解析的地图文件，一种游戏引擎解析的地图文件，点击左上角导出，可选择导出类型  
 
 ## 游戏内应用  
-目前，在游戏内解析地图文件还未完成，首先会做一款基于白鹭引擎的解析脚本，现在你可以自己实现简单的解析脚本，地图json格式为：  
+我写了一个简单的基于白鹭引擎的地图解析demo，你可以去这看它 [egret Map](https://github.com/checkmind/Map-editer-parse)  
+地图json格式为：  
 ``` typescript
 
 export interface matrixItem {
@@ -83,5 +84,4 @@ export interface layer {
 - 网格：是否显示网格  
 
 ## TODO  
-  
-- 编写白鹭引擎地图解析脚本
+没啥TODO了
