@@ -7,7 +7,7 @@ import { Icon, Switch, Input, Popconfirm } from "antd/lib";
 // import { connect } from 'react-redux'
 // import * as actions from '../redux/actions';
 // import { StoreState } from '../types/index';
-import { LayerItem } from "../types/layer";
+import { LayerItem, layer } from "../types/layer";
 import { connect } from "react-redux";
 // 层级关系用直接用数组下标，sort是命名排序
 import * as Actions from "@/redux/actions/layer";
@@ -22,6 +22,7 @@ interface Props {
   name: string;
   enthusiasmLevel?: number;
   curLayerId: number,
+  layer: layer,
   cgName: (payload: RENAME_INTER) => void;
   createLayer: (payload: { id: number }) => void;
   delLayer: (payload: { id: number }) => void;
@@ -42,7 +43,7 @@ class LayerCom extends React.Component<Props, {}> {
   }
   public render() {
     return (
-      <div className="layer">
+      <div className={this.props.layer.name ? 'layer show': 'hidden'}>
         <h3>图层</h3>
         <div className="layer_content">{this.renderLayers()}</div>
         <li className="tools">
@@ -159,6 +160,7 @@ export function mapStateToProps(StoreState: Map<string, any>) {
   const layer = StoreState.get("layer").present
   return {
     layers: (layer).layers,
+    layer: layer,
     curLayerId: layer.curLayerId
   };
 }

@@ -23,12 +23,11 @@ export function saveFile(file: StoreState) {
       })
     })
   })
-  console.log(file)
   const fileString = JSON.stringify({...file, imgSourceHash})
   var blob = new Blob([fileString], { type: 'text/plain;charset=utf-8' })
-  saveAs(blob, 'hello world.json')
+  saveAs(blob, `${file.layer.name}.json`)
 }
-export function importFile(file: string) {
+export function importFile(file: string,name: string) {
   const fileObj:any = JSON.parse(file)
   console.log(fileObj)
   const imgSourceHash = fileObj.imgSourceHash
@@ -52,6 +51,7 @@ export function importFile(file: string) {
       item.src = imgSourceHash[item.name]
     }
   })
+  layer.name = name
   return {
     block, layer
   }

@@ -36,7 +36,8 @@ const initState = {
   past: [],
   future: [],
   showLine: true,
-  eraser: false
+  eraser: false,
+  name: '',
 };
 // const initState = fromJS({
 //   layers: [],

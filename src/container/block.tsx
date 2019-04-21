@@ -37,7 +37,7 @@ class BLockCom extends React.Component<Props, {}> {
   }
   public render() {
     return (
-      <div className="block">
+      <div className={this.props.layer.name ? 'block show': 'hidden'}>
         <h3>图块</h3>
         <li className="tools">
           <a href="javascript:;">

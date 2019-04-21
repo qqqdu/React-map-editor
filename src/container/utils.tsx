@@ -6,7 +6,16 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import '@/style/util.less'
-import { Icon, Select, Modal, InputNumber, Form } from 'antd/lib'
+import {
+  Icon,
+  Select,
+  Modal,
+  InputNumber,
+  Form,
+  Row,
+  Col,
+  Input
+} from 'antd/lib'
 import * as Actions from '@/redux/actions/block'
 import * as LayerActions from '@/redux/actions/layer'
 import { blockItem } from '@/types/block'
@@ -39,18 +48,21 @@ class UtilCom extends React.Component<Props, {}> {
     visible: false,
     showNature: false,
     nowBlock: -1,
+    // 是否新建
+    isCreate: false,
     gridInf: {
       tableRow: 0,
       tableCol: 0,
       boxWidth: 0,
-      boxHeight: 0
+      boxHeight: 0,
+      name: ''
     }
   }
   constructor(props: Props) {
     super(props)
   }
   public render() {
-    let check;
+    let check
     if (this.props.layer.showLine) {
       check = <Icon type="check" style={{ color: '#08c' }} />
     }
@@ -83,11 +95,12 @@ class UtilCom extends React.Component<Props, {}> {
       <div className="util">
         <li className="tools">
           <Select value="菜单" style={{ width: 120 }}>
-            <Option value="新建">
+            <Option value="新建" className={!this.props.layer.name ? 'show': 'hidden'}>
               <p
                 style={{ width: '100%', height: '100%' }}
                 onClick={() => {
                   // this.importJson()
+                  this.showConfirm(true)
                 }}
               >
                 新建
@@ -103,7 +116,7 @@ class UtilCom extends React.Component<Props, {}> {
                 onChange={ev => this.importJson(ev)}
               />
             </Option>
-            <Option value="导出">
+            <Option value="导出" className={this.props.layer.name ? 'show': 'hidden'}>
               <p
                 style={{ width: '100%', height: '100%' }}
                 onClick={() => {
@@ -124,7 +137,7 @@ class UtilCom extends React.Component<Props, {}> {
               </p>
               {check}
             </Option>
-            <Option value="属性">
+            <Option value="属性" className={this.props.layer.name ? 'show': 'hidden'}>
               <p
                 style={{ width: '100%', height: '100%' }}
                 onClick={() => {
@@ -178,9 +191,10 @@ class UtilCom extends React.Component<Props, {}> {
       reader.onloadstart = function() {
         console.log('文件上传处理......')
       }
+      console.log(file)
       //操作完成
       reader.onload = () => {
-        const state: any = importFile(reader.result as string)
+        const state: any = importFile(reader.result as string, file.name.split('.')[0])
         this.props.importBlock(state.block.blockList)
         this.props.importLayer(state.layer)
       }
@@ -190,46 +204,68 @@ class UtilCom extends React.Component<Props, {}> {
     this.props.switchShowLine()
   }
   public renderNatureModel() {
+    const title = this.state.isCreate ? '新建项目' : '网格属性'
     return (
       <Modal
-        title="网格属性"
+        title={title}
         visible={this.state.showNature}
         onOk={() => this.handleOk()}
         onCancel={() => this.handleCancel()}
       >
         <Form layout="inline">
-          <Form.Item label="网格X轴数目">
-            <InputNumber
-              value={this.state.gridInf.tableCol}
-              onChange={ev => {
-                this.changeCol(ev as number)
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="网格Y轴数目">
-            <InputNumber
-              value={this.state.gridInf.tableRow}
-              onChange={ev => {
-                this.changeRow(ev as number)
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="图块宽度">
-            <InputNumber
-              value={this.state.gridInf.boxWidth}
-              onChange={ev => {
-                this.changeWidth(ev as number)
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="图块高度">
-            <InputNumber
-              value={this.state.gridInf.boxHeight}
-              onChange={ev => {
-                this.changeHeight(ev as number)
-              }}
-            />
-          </Form.Item>
+          <Row gutter={24} className={!this.props.layer.name ? 'show': 'hidden'}>
+            <Col span={24}>
+              <Form.Item label="地图名称">
+                <Input
+                  placeholder="Hello Man"
+                  value={this.state.gridInf.name}
+                  onChange={ev => {
+                    this.changeFileName(ev)
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={24}>
+            <Col span={24}>
+              <Form.Item label="网格X轴数目">
+                <InputNumber
+                  value={this.state.gridInf.tableCol}
+                  onChange={ev => {
+                    this.changeCol(ev as number)
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="网格Y轴数目">
+                <InputNumber
+                  value={this.state.gridInf.tableRow}
+                  onChange={ev => {
+                    this.changeRow(ev as number)
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={24}>
+            <Col span={24}>
+              <Form.Item label="图块宽度">
+                <InputNumber
+                  value={this.state.gridInf.boxWidth}
+                  onChange={ev => {
+                    this.changeWidth(ev as number)
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="图块高度">
+                <InputNumber
+                  value={this.state.gridInf.boxHeight}
+                  onChange={ev => {
+                    this.changeHeight(ev as number)
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     )
@@ -243,7 +279,6 @@ class UtilCom extends React.Component<Props, {}> {
   }
   public onRedo() {
     if (!this.props.canRedo) {
-      console.log('不能取消撤销')
       return
     }
     this.props.onRedo()
@@ -252,7 +287,15 @@ class UtilCom extends React.Component<Props, {}> {
     this.setState({
       showNature: false
     })
-    this.props.setGridInf(this.state.gridInf)
+    if(this.state.isCreate && !this.state.gridInf.name) {
+      this.setState((prevState: any) => ({
+        gridInf: {
+          ...prevState.gridInf,
+          name: 'Hello World'
+        }
+      }))
+    }
+    this.props.setGridInf({...this.state.gridInf, name: 'Hello World'})
   }
   public changeCol(ev: number) {
     this.setState((prevState: any) => ({
@@ -261,6 +304,16 @@ class UtilCom extends React.Component<Props, {}> {
         tableCol: ev
       }
     }))
+  }
+  public changeFileName(ev: any) {
+    console.log(ev.target.value)
+    this.setState((prevState: any) => ({
+      gridInf: {
+        ...prevState.gridInf,
+        name: ev.target.value
+      }
+    }))
+    ev.persist()
   }
   public changeRow(ev: number) {
     this.setState((prevState: any) => ({
@@ -306,14 +359,16 @@ class UtilCom extends React.Component<Props, {}> {
       id: delId
     })
   }
-  public showConfirm() {
+  public showConfirm(isCreate: boolean = false) {
     this.setState({
       showNature: true,
+      isCreate: isCreate,
       gridInf: {
         tableCol: this.props.layer.tableCol,
         tableRow: this.props.layer.tableRow,
         boxHeight: this.props.layer.boxHeight,
-        boxWidth: this.props.layer.boxWidth
+        boxWidth: this.props.layer.boxWidth,
+        name: this.props.layer.name
       }
     })
   }

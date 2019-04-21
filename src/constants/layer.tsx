@@ -51,6 +51,7 @@ export interface GRIDINF {
   tableRow: number;
   boxWidth: number;
   boxHeight: number;
+  name: string;
 }
 // 辅助线
 export const SHOW_LINE ='SHOW_LINE';
