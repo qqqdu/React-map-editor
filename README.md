@@ -6,7 +6,7 @@ Tiled 功能很强大，但我需要的功能好像不是很多，是否能造�
 
 ## 开始使用    
 
-http://qqqdu.com/React-map-editer/  
+https://qqqdu.github.io/React-map-editer/index.html
 
 ## 导入demo  
 
