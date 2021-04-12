@@ -4,10 +4,6 @@
 
 Tiled 功能很强大，但我需要的功能好像不是很多，是否能造个轮子？来简单快速的进行地图编辑
 
-## 开始使用    
-
-https://qqqdu.github.io/React-map-editer/index.html
-
 ## 导入demo  
 
 在左上角的导入按钮中，导入根目录中的 `Hello World.json` 地图资源文件，得益于 图片被转成了 `base 64` 字符串，你可以快捷的预览到地图效果，而不需要下载图片原资源  
